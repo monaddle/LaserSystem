@@ -29,7 +29,7 @@ namespace LaserSystemLibrary
             fs.DataTable.Columns.Add("TIME", typeof(string));
             fs.DataTable.Columns.Add("LATITUDE", typeof(string));
             fs.DataTable.Columns.Add("LONGITUDE", typeof(string));
-            fs.DataTable.Columns.Add("SCANID", typeof(string));
+            fs.DataTable.Columns.Add("ALTITUDE", typeof(string));
             fs.Projection = KnownCoordinateSystems.Geographic.World.WGS1984;
             fs.Projection = utm17;
             this.path = path;
@@ -84,7 +84,7 @@ namespace LaserSystemLibrary
             feature.DataRow["LATITUDE"] = xy[1];
             feature.DataRow["LONGITUDE"] = xy[0];
             feature.DataRow["SKIRTHT"] = skirtHeight;
-            feature.DataRow["SCANID"] = scanID;
+            feature.DataRow["ALTITUDE"] = z;
             feature.DataRow.EndEdit();
             countSinceSave++;
         }
@@ -136,7 +136,6 @@ namespace LaserSystemLibrary
             string[] lines = new string[1];
             lines[0] = "PROJCS[\"WGS_1984_UTM_Zone_17N\",GEOGCS[\"GCS_WGS_1984\",DATUM[\"D_WGS_1984\",SPHEROID[\"WGS_1984\",6378137.0,298.257223563]],PRIMEM[\"Greenwich\",0.0],UNIT[\"Degree\",0.0174532925199433]],PROJECTION[\"Transverse_Mercator\"],PARAMETER[\"False_Easting\",500000.0],PARAMETER[\"False_Northing\",0.0],PARAMETER[\"Central_Meridian\",-81.0],PARAMETER[\"Scale_Factor\",0.9996],PARAMETER[\"Latitude_Of_Origin\",0.0],UNIT[\"Meter\",1.0]]";
             System.IO.File.WriteAllLines(prjpath, lines);
-            // just leaving this in in case it's needed, but I don't htink it will be
         }
 
 

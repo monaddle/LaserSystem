@@ -35,6 +35,10 @@
     <StartupObject />
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="DotSpatial.Serialization, Version=0.11.9.6, Culture=neutral, PublicKeyToken=441f200f827611e7, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>bin\Debug\DotSpatial.Serialization.dll</HintPath>
+    </Reference>
     <Reference Include="ogr_csharp">
       <HintPath>..\..\..\..\..\..\..\Program Files\FWTools2.4.7\csharp\ogr_csharp.dll</HintPath>
     </Reference>
