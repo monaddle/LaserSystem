@@ -178,52 +178,6 @@ namespace LaserSystemLibrary
                 return null;
             }
         }
-        public pointXYZ parseGPSReading2(NmeaSentence gpsReading)
-        {
-                        GeoUTMConverter utmConverter = new GeoUTMConverter();
-            string[] splitReading = gpsReading.buffer;
-            string latitude = splitReading[2];
-            string longitude = splitReading[4];
-            string zString = splitReading[9];
-            pointXYZ point = new pointXYZ();
-
-            try
-            {
-                point.latitude = (Convert.ToDouble(latitude.Substring(0, 2)) + Convert.ToDouble(latitude.Substring(2)) / 60);
-                point.longitude = -(Convert.ToDouble(longitude.Substring(0, 3)) + Convert.ToDouble(longitude.Substring(3)) / 60);
-                //point.longitude = -(Convert.ToDouble(longitude.Substring(0, 3)) + Convert.ToDouble(longitude.Substring(3, 2)) / 60) - Convert.ToDouble(longitude.Substring(5)) / 60;
-                //Console.WriteLine("x:{0}, y:{1}", point.x, point.y);
-                point.z = Convert.ToDouble(zString);
-
-                utmConverter.ToUTM(point.latitude, point.longitude);
-                point.x = utmConverter.X;
-                point.y = utmConverter.Y;
-                //Console.WriteLine("x:{0}, y:{1}", point.x, point.y);
-                double[] xy = new double[2];
-                xy[0] = point.longitude;
-                xy[1] = point.latitude;
-                //An array for the z coordinate
-                double[] z = new double[1];
-                z[0] = point.z;
-                //Defines the starting coordiante system
-                ProjectionInfo pStart = KnownCoordinateSystems.Geographic.World.WGS1984;
-                //Defines the ending coordiante system
-                ProjectionInfo pEnd = KnownCoordinateSystems.Projected.UtmWgs1984.WGS1984UTMZone17N;
-                //Calls the reproject function that will transform the input location to the output locaiton
-                Reproject.ReprojectPoints(xy, z, pStart, pEnd, 0, 1);
-                point.x = xy[0];
-                point.y = xy[1];
-                point.z = z[0];
-                return point;
-            }
-            catch (FormatException err)
-            {
-                return null;
-            }
-
-
-        }
-
 
         public void Stop()
         {

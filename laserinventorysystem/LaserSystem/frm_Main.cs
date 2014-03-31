@@ -528,7 +528,7 @@ namespace LaserSystem
                 rightLaserStatusChecker.RunWorkerAsync();
                 gpsStatusChecker.RunWorkerAsync();
             }
-            catch (Exception err)
+            catch (Exception)
             {
                 
             }

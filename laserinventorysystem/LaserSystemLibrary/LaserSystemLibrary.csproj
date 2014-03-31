@@ -61,7 +61,6 @@
     <Compile Include="LaserScanUtilities.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="LineSegment.cs" />
-    <Compile Include="LMS291.cs" />
     <Compile Include="LMS291_2.cs" />
     <Compile Include="LMS_Scan.cs" />
     <Compile Include="NmeaReader.cs" />
@@ -73,9 +72,6 @@
     <Compile Include="ScanLocation.cs" />
     <Compile Include="ScanningOptions.cs" />
     <Compile Include="ScanResults.cs" />
-    <Compile Include="ScanRunner.cs" />
-    <Compile Include="ScanRunner2.cs" />
-    <Compile Include="ScanRunner3.cs" />
     <Compile Include="ScanRunner4.cs" />
     <Compile Include="ShapefileWriter.cs" />
   </ItemGroup>

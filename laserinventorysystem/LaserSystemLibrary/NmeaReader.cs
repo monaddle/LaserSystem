@@ -13,12 +13,9 @@ namespace LaserSystemLibrary
     {
         public SerialPort port = new SerialPort();
         public ConcurrentQueue<NmeaSentence> readings = new ConcurrentQueue<NmeaSentence>();
-        int Need = 0;
-        int Have = 0;
 
         int BytesRead = 0;
         int BytesToRead;
-        int milliseconds = 0;
         byte[] bytes;
         public Stopwatch stopwatch;
         public NmeaReader(string portName, int baudRate, Stopwatch SW)

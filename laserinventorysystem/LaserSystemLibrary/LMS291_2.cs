@@ -16,12 +16,10 @@ namespace LaserSystemLibrary
         public Stopwatch stopWatch;
         int BufferSize = 512;
         public byte[] Buffer;
-        int bufferPosition = 0;
         int Need = 0;
         int Have = 0;
         int BytesToRead = 0;
         public int numberOfScansFound = 0;
-        int firstSecond = 0;
         int numberOfSeconds = 0;
         byte[] Status = new byte[] { 0x02, 0x00, 0x01, 0x00, 0x31, 0x15, 0x12 };
         byte[] Start = new byte[] { 0x02, 0x00, 0x02, 0x00, 0x20, 0x24, 0x34, 0x08 };

@@ -11,7 +11,6 @@ namespace LaserSystemLibrary
 {
     public class ShapefileWriter
     {
-        string ShapefilePath;
         FeatureSet fs;
         int countSinceSave = 0;
         string path;
