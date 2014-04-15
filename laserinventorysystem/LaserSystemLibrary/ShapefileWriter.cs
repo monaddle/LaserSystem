@@ -28,7 +28,7 @@ namespace LaserSystemLibrary
             fs.DataTable.Columns.Add("TIME", typeof(string));
             fs.DataTable.Columns.Add("LATITUDE", typeof(string));
             fs.DataTable.Columns.Add("LONGITUDE", typeof(string));
-            fs.DataTable.Columns.Add("ALTITUDE", typeof(string));
+            fs.DataTable.Columns.Add("ALTITUDE", typeof(double));
             fs.Projection = KnownCoordinateSystems.Geographic.World.WGS1984;
             fs.Projection = utm17;
             this.path = path;
