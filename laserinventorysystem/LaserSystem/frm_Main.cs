@@ -554,43 +554,13 @@ namespace LaserSystem
             throw new NotImplementedException();
         }
 
-        private void processScansToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            gpsStatusChecker.CancelAsync();
-            leftLaserStatusChecker.CancelAsync();
-            rightLaserStatusChecker.CancelAsync();
-            GetSettingsFromForm();
-            ProcessScans scansFrm = new ProcessScans(settings);
-            scansFrm.ShowDialog();
 
-            gpsStatusChecker.RunWorkerAsync();
-            leftLaserStatusChecker.RunWorkerAsync();
-            rightLaserStatusChecker.RunWorkerAsync();
-        }
 
         private void quitToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Close();
         }
 
-        private void label1_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void leftLaserStatusChecker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-
-        }
-        private void gpsStatusChecker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-
-        }
-
-        private void rightLaserStatusChecker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-
-        }
 
         public static void Log(string logMessage, StreamWriter w)
         {

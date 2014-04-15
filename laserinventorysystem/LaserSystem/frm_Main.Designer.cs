@@ -56,7 +56,6 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.processScansToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.quitToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setCOMPortsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
@@ -92,7 +91,6 @@
             this.label1.Size = new System.Drawing.Size(141, 24);
             this.label1.TabIndex = 1;
             this.label1.Text = "Laser Height (ft)";
-            this.label1.Click += new System.EventHandler(this.label1_Click);
             // 
             // txtBox_rowDistance
             // 
@@ -350,19 +348,10 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.processScansToolStripMenuItem,
             this.quitToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             this.fileToolStripMenuItem.Size = new System.Drawing.Size(53, 29);
             this.fileToolStripMenuItem.Text = "File";
-            // 
-            // processScansToolStripMenuItem
-            // 
-            this.processScansToolStripMenuItem.Name = "processScansToolStripMenuItem";
-            this.processScansToolStripMenuItem.Size = new System.Drawing.Size(201, 30);
-            this.processScansToolStripMenuItem.Text = "Process Scans";
-            this.processScansToolStripMenuItem.Visible = false;
-            this.processScansToolStripMenuItem.Click += new System.EventHandler(this.processScansToolStripMenuItem_Click);
             // 
             // quitToolStripMenuItem
             // 
@@ -400,7 +389,6 @@
             this.leftLaserStatusChecker.WorkerSupportsCancellation = true;
             this.leftLaserStatusChecker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.LeftLaserChecker_DoWork);
             this.leftLaserStatusChecker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.leftLaserStatusChecker_ProgressChanged);
-            this.leftLaserStatusChecker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.leftLaserStatusChecker_RunWorkerCompleted);
             // 
             // rightLaserStatusChecker
             // 
@@ -408,7 +396,6 @@
             this.rightLaserStatusChecker.WorkerSupportsCancellation = true;
             this.rightLaserStatusChecker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.RightLaserChecker_DoWork);
             this.rightLaserStatusChecker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.rightLaserChecker_ProgressChanged);
-            this.rightLaserStatusChecker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.rightLaserStatusChecker_RunWorkerCompleted);
             // 
             // gpsStatusChecker
             // 
@@ -416,7 +403,6 @@
             this.gpsStatusChecker.WorkerSupportsCancellation = true;
             this.gpsStatusChecker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.GPSChecker_DoWork);
             this.gpsStatusChecker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.GPSStatusChecker_ProgressChanged);
-            this.gpsStatusChecker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.gpsStatusChecker_RunWorkerCompleted);
             // 
             // btn_StartScanning
             // 
@@ -510,7 +496,6 @@
         private System.Windows.Forms.ToolStripMenuItem saveDataToolStripMenuItem;
         private System.Windows.Forms.TextBox txtBox_MinHeight;
         private System.Windows.Forms.Label lbl_MinHeight;
-        private System.Windows.Forms.ToolStripMenuItem processScansToolStripMenuItem;
         private System.Windows.Forms.Label label8;
     }
 }
