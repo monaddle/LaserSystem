@@ -21,5 +21,9 @@ namespace COMServer
         {
             port.Write(message);
         }
+        public void WriteBytes(byte[] bytes, int offset, int count)
+        {
+            port.Write(bytes, offset, count);
+        }
     }
 }

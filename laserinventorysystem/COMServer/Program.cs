@@ -10,22 +10,27 @@ namespace COMServer
     {
         static void Main(string[] args)
         {
-            COMServer cs = new COMServer("COM3", 9800);
-            COMClient cl = new COMClient("COM4", 9800);
-            Thread.Sleep(1000);
-            cs.Write("omfg a string!");
-            Thread.Sleep(100);
+            LMS291Server gps = new LMS291Server("COM3", 500000);
+            gps.RunServer();
+            COMClient cl = new COMClient("COM4", 500000);
             string output;
-            while ((output = cl.ReadPort()) == "")
-            {
-
+            while (true)
+            {   
+                output = cl.ReadPort();
+                if (output != "")
+                {
+                    Console.Write(output);
+                    output = "";
+                }
             }
+            
             Console.WriteLine(output);
             string line = Console.ReadLine();
-            cs.Write(line);
             Thread.Sleep(1);
             Console.WriteLine(cl.ReadPort());
             Console.ReadKey();
+
+
         }
     }
 }

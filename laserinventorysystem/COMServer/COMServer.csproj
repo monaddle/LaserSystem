@@ -43,12 +43,21 @@
   <ItemGroup>
     <Compile Include="COMClient.cs" />
     <Compile Include="COMServer.cs" />
+    <Compile Include="LMS291Server.cs" />
+    <Compile Include="LMSWriter.cs" />
+    <Compile Include="NMEAServer.cs" />
     <Compile Include="NMEAWriter.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\LaserSystemLibrary\LaserSystemLibrary.csproj">
+      <Project>{e0f3d8a2-f0ca-4a2b-a9dc-dcad965ca246}</Project>
+      <Name>LaserSystemLibrary</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
