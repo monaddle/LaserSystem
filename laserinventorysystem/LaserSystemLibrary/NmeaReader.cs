@@ -53,7 +53,7 @@ namespace LaserSystemLibrary
                         sentence.buffer = gpgga;
                         sentence.ticks = stopwatch.ElapsedTicks;
 
-                        Console.WriteLine("Latittude:{0}{1}, Longitude:{2}{3}, altitude:{4}", gpgga[2], gpgga[3], gpgga[4], gpgga[5], gpgga[9]);
+                        //Console.WriteLine("Latittude:{0}{1}, Longitude:{2}{3}, altitude:{4}", gpgga[2], gpgga[3], gpgga[4], gpgga[5], gpgga[9]);
                         readings.Enqueue(sentence);
                         memmove(ref bytes, 66, 2000);
                         BytesRead = 0;
