@@ -30,70 +30,9 @@ namespace LaserSystemLibrary
         byte[] RequestConfiguration = { 0x02, 0x00, 0x01, 0x00, 0x74, 0x50, 0x12 };
         byte[] SingleScan = new byte[] { 0x02, 0x00, 0x02, 0x00, 0x30, 0x01, 0x31, 0x18 };
 
-        int lowestOffset = 0;
-        int currentOffset = 0;
-        int AgeOfLowestOffset = 0;
-        int MaxAgeOfLowestOffset = 10;
-        int startingOffset = 0;
         bool leftScan;
         bool startingOffsetDetermined = false;
         public bool saveScans { get; set; }
-
-        private int HandleOffset(int offset)
-        {
-            int SuggestedOffset = 0;
-            Console.WriteLine("Offset: {0}, LowestOffset: {1}, AgeOfLowestOffset: {2}, currentoffset: {3}", offset, lowestOffset, AgeOfLowestOffset, currentOffset);
-            if (lowestOffset == 0)
-            {
-                lowestOffset = offset;
-            }
-            if (startingOffsetDetermined == false)
-            {
-                if (AgeOfLowestOffset < MaxAgeOfLowestOffset)
-                {
-
-                    if (lowestOffset > offset)
-                    {
-                        lowestOffset = offset;
-                        AgeOfLowestOffset = 0;
-                    }
-                    AgeOfLowestOffset++;
-                }
-                else
-                {
-                    startingOffsetDetermined = true;
-                    startingOffset = lowestOffset;
-                    currentOffset = lowestOffset;
-                    AgeOfLowestOffset = 0;
-                }
-            }
-            else
-            {
-                if (offset < lowestOffset)
-                {
-                    lowestOffset = offset;
-                    AgeOfLowestOffset = 0;
-                }
-                else
-                {
-                    AgeOfLowestOffset++;
-                    if (AgeOfLowestOffset >= MaxAgeOfLowestOffset)
-                    {
-                        if (lowestOffset > currentOffset)
-                        {
-                            SuggestedOffset = lowestOffset - currentOffset;
-                            currentOffset = lowestOffset;
-                        }
-                        else
-                        {
-                            AgeOfLowestOffset = 0;
-                            lowestOffset = 0;
-                        }
-                    }
-                }
-            }
-            return SuggestedOffset;
-        }
         int milliseconds = 0;
         int currentSecond = 0;
         public int numberOfScansThisSecond = 0;
@@ -122,6 +61,29 @@ namespace LaserSystemLibrary
             numberOfScansFound = 0;
             numberOfSeconds = 0;
         }
+        int bytesRead;
+        //public LmsScan2 read2()
+        //{
+        //    bytesRead += port.Read(Buffer, bytesRead, message.Length - received);
+        //    if (bytesRead > 360)
+        //    {
+        //        for (int i = 0; i < bytesRead - 20; i++)
+        //        {
+        //            byte STX = Buffer[i];
+        //            byte ADDR = Buffer[i + 1];
+        //            byte CMD = Buffer[i + 4];
+        //            if (STX == 0x02 & ((ADDR & 0x80) == 0x80))
+        //            {
+                        
+        //            }
+        //        }
+        //    }
+        //    while ((received < message.Length) && ((DateTime.Now - start).Milliseconds < 500))
+        //    {
+
+        //        //append the data to the buffer
+        //    }
+        //}
         public LmsScan2 read()
         {
 
@@ -209,7 +171,6 @@ namespace LaserSystemLibrary
 
                             Console.WriteLine("Second {0} scan average: {1}", currentSecond, Convert.ToDouble(numberOfScansFound) / numberOfSeconds);
                             Console.WriteLine("Expected scans: {0}, delta: {1}", numberOfSeconds * 75, numberOfScansFound - numberOfSeconds * 75);
-                            Console.WriteLine("Suggested offset: {0}", HandleOffset(numberOfSeconds * 75 - numberOfScansFound));
                         }
 
                         ushort givenCheckSum = (ushort)(Buffer[Need - 2] | (Buffer[Need - 1] << 8));

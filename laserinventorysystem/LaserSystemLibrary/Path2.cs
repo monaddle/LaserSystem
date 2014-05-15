@@ -369,7 +369,7 @@ namespace LaserSystemLibrary
             foreach (ScanLocation tick in Ticks)
             {
                 
-                second = (int)(tick.point.t / (double)Stopwatch.Frequency);
+                second = (int)(tick.point. t/ (double)Stopwatch.Frequency);
                 if(scanDict.ContainsKey(second))
                     currentList = scanDict[second];
                 else break;

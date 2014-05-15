@@ -185,6 +185,7 @@ namespace LaserSystemLibrary
             NmeaSentence nextSentence;
             int count = 0;
             pointXYZ scan;
+            Save();
             while(gps.readings.TryDequeue(out sentence))
             {
                 GPSReadings.Add(sentence);
@@ -200,7 +201,6 @@ namespace LaserSystemLibrary
                 }
             }
 
-            Save();
             path.LeftScanDict = lScanDict;
             path.RightScanDict = rScanDict;
             path.Close();
