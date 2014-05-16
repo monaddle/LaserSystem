@@ -16,14 +16,14 @@ namespace LaserSystemLibrary
 
         int BytesRead = 0;
         int BytesToRead;
-        byte[] bytes;
+        char[] chars;
         public Stopwatch stopwatch;
         public NmeaReader(string portName, int baudRate, Stopwatch SW)
         {
             port.BaudRate = baudRate;
             port.PortName = portName;
             port.Open();
-            bytes = new byte[20000];
+            chars = new char[200];
             stopwatch = SW;
         }
         public void close()
@@ -33,47 +33,55 @@ namespace LaserSystemLibrary
 
         public void read()
         {
-            BytesToRead = port.BytesToRead;
-            if (BytesToRead > 0)
+            BytesRead += port.Read(chars, BytesRead, 69);
+            if (BytesRead > 0)
             {
-
-                port.Read(bytes, BytesRead, BytesToRead);
-                BytesRead += BytesToRead;
-                //Console.WriteLine(System.Text.Encoding.ASCII.GetString(bytes, 0, BytesRead));
-
-                String str = System.Text.Encoding.ASCII.GetString(bytes, 0, BytesRead);
+                while (BytesRead < 69)
+                    BytesRead += port.Read(chars, BytesRead, 69);
+                
+                String str = new String(chars);
                 int index = str.IndexOf("$GPGGA");
-                if ((BytesRead - index) > 67 & (index != -1))
+                if (index > 0)
                 {
-                    NmeaSentence sentence = new NmeaSentence();
-
-                    try
-                    {
-                        String[] gpgga = str.Substring(index, 67).Split(',');
-                        sentence.buffer = gpgga;
-                        sentence.ticks = stopwatch.ElapsedTicks;
-
-                        //Console.WriteLine("Latittude:{0}{1}, Longitude:{2}{3}, altitude:{4}", gpgga[2], gpgga[3], gpgga[4], gpgga[5], gpgga[9]);
-                        readings.Enqueue(sentence);
-                        memmove(ref bytes, 66, 2000);
-                        BytesRead = 0;
-                    }
-                    catch
-                    {
-                        return;
-                    }
-
+                    memmove(ref chars, index, 100);
+                    BytesRead -= index;
+                    return;
                 }
+                if (index == -1 & BytesRead > 100)
+                {
+                    BytesRead = 0;
+                }
+
+
+                NmeaSentence sentence = new NmeaSentence();
+
+                try
+                {
+                    String[] gpgga = str.Substring(index, 67).Split(',');
+                    sentence.buffer = gpgga;
+                    sentence.ticks = stopwatch.ElapsedTicks;
+
+                    Console.WriteLine("Latittude:{0}{1}, Longitude:{2}{3}, altitude:{4}", gpgga[2], gpgga[3], gpgga[4], gpgga[5], gpgga[9]);
+                    readings.Enqueue(sentence);
+                    BytesRead = 0;
+                    chars = new char[200];
+                    
+                }
+                catch
+                {
+                    BytesRead = 0;
+                    return;
+                }
+
+                
             }
         }
-        public static void memmove(ref byte[] input, int start, int size)
+        public static void memmove(ref char[] input, int start, int size)
         {
-            //byte[] output = new byte[size];
             for (int i = 0; i < size; i++)
             {
                 input[i] = input[start + i];
             }
-            //return output;
         }
     }
 }
