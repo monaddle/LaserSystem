@@ -4,14 +4,14 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Threading;
-using LaserSystemLibrary;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO.Ports;
 using System.Timers;
-namespace testcropsensors
+using System.IO;
+namespace LaserSystemLibrary
 {
-    class TwoCropCircles
+    public class TwoCropCircles
     {
         string TopLeftACSCom = "COM9";
         string TopRightACSCom = "COM17";
@@ -21,7 +21,7 @@ namespace testcropsensors
         string LeftLMSCom = "COM12";
         string RightLMSCom = "COM11";
 
-        ConcurrentQueue<ACS430Reading> TopLeftACSReadings = new ConcurrentQueue<ACS430Reading>();
+        ConcurrentQueue<ACS430Reading> TopLeftACSReadings;
         ConcurrentQueue<ACS430Reading> TopRightACSReadings = new ConcurrentQueue<ACS430Reading>();
         ConcurrentQueue<ACS430Reading> BottomLeftACSReadings = new ConcurrentQueue<ACS430Reading>();
         ConcurrentQueue<ACS430Reading> BottomRightACSReadings = new ConcurrentQueue<ACS430Reading>();
@@ -39,22 +39,49 @@ namespace testcropsensors
         SensorLogger sensorLogger;
         Path2 path;
         System.Timers.Timer timer1 = new System.Timers.Timer(1500);
-        
+        ScanningOptions Options;
 
-        public void Run()
+        int currentSecond = 0;
+
+        public TwoCropCircles(  ConcurrentQueue<ACS430Reading> topRight,
+                                ConcurrentQueue<ACS430Reading> bottomRight,
+                                ConcurrentQueue<ACS430Reading> topLeft,
+                                ConcurrentQueue<ACS430Reading> bottomLeft,
+                                ConcurrentQueue<NmeaSentence> gpsReadings,
+                                ConcurrentQueue<LmsScan2> leftLMSreadings,
+                                ConcurrentQueue<LmsScan2> rightLMSreadings,
+                                ScanningOptions options,
+            Stopwatch stopWatch)
         {
+            Options = options;
+            TopLeftACSReadings = topLeft;
+            BottomLeftACSReadings = bottomLeft;
+            TopRightACSReadings = topRight;
+            BottomRightACSReadings = bottomRight;
+            GPSReadings = gpsReadings;
+            LeftLMSReadings = leftLMSreadings;
+            RightLMSReadings = rightLMSreadings;
+            LaserScanUtilities.min_height = Options.minHeight;
+            LaserScanUtilities.max_distance = Options.rowDistance;
+            LaserScanUtilities.laserHeight = Options.laserHeight;
+            sw = stopWatch;
+
+            path = new Path2(Options, false, false, "none");
+            string date = DateTime.Now.ToString("MM-dd-yy H.mm.ss");
+            Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + date);
+            shapefile = new ACSShapefileWriter(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + date + "\\" + date + Options.OutputFileName + ".shp");
+            sensorLogger = new SensorLogger(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + date + "\\", date);
             timer1.Start();
             timer1.Elapsed += timer_Elapsed;
-            foreach(string s in SerialPort.GetPortNames())
+            foreach (string s in SerialPort.GetPortNames())
             {
                 Console.Write("{0}, ", s);
             }
-            ScanningOptions options = new ScanningOptions();
-            options.LoadSettings();
-            path = new Path2(options, false, false, "none");
-            
-            shapefile = new ACSShapefileWriter("C:/users/public/test.shp");
-            List<Thread> threads = new List<Thread>();
+
+        }
+
+        public TwoCropCircles()
+        {
             sw.Start();
             Thread th1 = new Thread(RunTopLeftACS);
             th1.Name = "topleftacs";
@@ -80,29 +107,22 @@ namespace testcropsensors
             Thread th7 = new Thread(RunRightLMS);
             th7.Name = "RightLMS";
             th7.Start();
+        }
+        
 
-            int currentSecond = 0;
-            sensorLogger = new SensorLogger("c:\\users\\public\\documents\\", DateTime.Now.ToString("MM-dd-yy H.mm.ss"));
+        public void Run()
+        {
             
-            while (true)
-            {
-                if (currentSecond < sw.Elapsed.TotalSeconds - 1.5)
-                {
 
-                }
-
-                if (Console.KeyAvailable)
-                {
-                    char c = Console.ReadKey().KeyChar;
-                    if (c == 's')
-                        break;
-                }
-
-            }
-            shapefile.Close();
-            threadstop = true;
         }
 
+        public void Stop()
+        {
+            timer1.Stop();
+            Thread.Sleep(100);
+            shapefile.Close();
+            sensorLogger.Close();
+        }
         void GetScans()
         {
             NmeaSentence sentence;
@@ -168,25 +188,28 @@ namespace testcropsensors
                 if (RightLMSReadings.TryDequeue(out scan) != false)
                 {
                     RightScanRepo.LMSScans.Add(scan);
-                    sensorLogger.LogLeftLMS(scan);
+                    sensorLogger.LogRightLMS(scan);
                 }
             }
         }
         void timer_Elapsed(object sender, ElapsedEventArgs e)
         {
             GetScans();
+             
             double currentSecond = Math.Floor(sw.Elapsed.TotalSeconds);
             if (timer1.Interval == 1500)
                 timer1.Interval = 1000;
             Console.WriteLine("OMFG A TIMER!");
             Console.WriteLine("saving!");
             ACS430Reading reading;
-            List<ScanGroup> scansLeft = new List<ScanGroup>();
-            List<ScanGroup> scansRight = new List<ScanGroup>();
             ScanGroup sgL = new ScanGroup();
             ScanGroup sgR = new ScanGroup();
+            List<ScanGroup> leftScans = new List<ScanGroup>();
+            List<ScanGroup> rightScans = new List<ScanGroup>();
+            Console.WriteLine("Left ticks: {0}", path.LeftTicks.Count);
             for (int i = 0; i < path.LeftTicks.Count; i++)
             {
+                Console.WriteLine("{0} vs {1}", Math.Floor(path.LeftTicks[i].tick/1000), currentSecond);
                 if (Math.Floor(path.LeftTicks[i].tick / 1000) <= currentSecond)
                 {
                     sgL.ScanLoc = path.LeftTicks[i];
@@ -194,10 +217,14 @@ namespace testcropsensors
                     sgL.TopReading = LeftScanRepo.ACSTopReadings.Aggregate((x, y) => Math.Abs(x.Milliseconds - sgL.ScanLoc.tick) < Math.Abs(y.Milliseconds - sgL.ScanLoc.tick) ? x : y);
                     sgL.BottomReading = LeftScanRepo.ACSBottomReadings.Aggregate((x, y) => Math.Abs(x.Milliseconds - sgL.ScanLoc.tick) < Math.Abs(y.Milliseconds - sgL.ScanLoc.tick) ? x : y);
                     sgL.ScanResults = LaserScanUtilities.GetScanInfo(sgL.LMSScan.buffer, true);
-                    scansLeft.Add(sgL);
-
+                    leftScans.Add(sgL);
+                    path.LeftTicks.RemoveAt(i);
+                    Console.WriteLine("left tick removed");
+                    i--;
                 }
+            
             }
+            Console.WriteLine("right ticks: {0}", path.RightTicks.Count);
             for (int i = 0; i < path.RightTicks.Count; i++)
             {
                 if (Math.Floor(path.RightTicks[i].tick / 1000) <= currentSecond)
@@ -207,23 +234,25 @@ namespace testcropsensors
                     sgR.TopReading = RightScanRepo.ACSTopReadings.Aggregate((x, y) => Math.Abs(x.Milliseconds - sgR.ScanLoc.tick) < Math.Abs(y.Milliseconds - sgR.ScanLoc.tick) ? x : y);
                     sgR.BottomReading = RightScanRepo.ACSBottomReadings.Aggregate((x, y) => Math.Abs(x.Milliseconds - sgR.ScanLoc.tick) < Math.Abs(y.Milliseconds - sgR.ScanLoc.tick) ? x : y);
                     sgR.ScanResults = LaserScanUtilities.GetScanInfo(sgL.LMSScan.buffer, true);
-                    scansRight.Add(sgR);
+                    rightScans.Add(sgR);
+                    path.RightTicks.RemoveAt(i);
+                    i--;
+                    Console.WriteLine("right tick removed");
                 }
             }
-            foreach (ScanGroup sg in scansLeft)
+            
+            foreach (ScanGroup sg in leftScans)
             {
                 shapefile.write(sg);
             }
-            foreach (ScanGroup sg in scansRight)
+            foreach (ScanGroup sg in rightScans)
             {
                 shapefile.write(sg);
             }
-
-
         }
         private void WriteToConsole(string str)
         {
-            if (DebugToConsole == true)
+            if (false)
             {
                 Console.WriteLine(str);
             }

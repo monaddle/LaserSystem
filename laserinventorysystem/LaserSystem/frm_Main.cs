@@ -12,6 +12,9 @@ using System.Threading;
 using LaserSystemLibrary;
 using System.Diagnostics;
 using System.IO;
+using System.Timers;
+using System.Collections.Concurrent;
+
 namespace LaserSystem
 {
     public partial class frm_main : Form
@@ -23,10 +26,19 @@ namespace LaserSystem
         static List<LmsScan2> leftscans = new List<LmsScan2>();
         static List<LmsScan2> rightscans = new List<LmsScan2>();
 
-
+        System.Timers.Timer timer;
+        bool threadstop = false;
         NmeaReader gps;
         Stopwatch stopwatch = new Stopwatch();
         EventWaitHandle waitHandle = new EventWaitHandle(false, EventResetMode.ManualReset);
+
+        ConcurrentQueue<ACS430Reading> TopLeftACSReadings = new ConcurrentQueue<ACS430Reading>();
+        ConcurrentQueue<ACS430Reading> TopRightACSReadings = new ConcurrentQueue<ACS430Reading>();
+        ConcurrentQueue<ACS430Reading> BottomLeftACSReadings = new ConcurrentQueue<ACS430Reading>();
+        ConcurrentQueue<ACS430Reading> BottomRightACSReadings = new ConcurrentQueue<ACS430Reading>();
+        ConcurrentQueue<NmeaSentence> GPSReadings = new ConcurrentQueue<NmeaSentence>();
+        ConcurrentQueue<LmsScan2> LeftLMSReadings = new ConcurrentQueue<LmsScan2>();
+        ConcurrentQueue<LmsScan2> RightLMSReadings = new ConcurrentQueue<LmsScan2>();
         public frm_main()
         {
             InitializeComponent();
@@ -40,23 +52,163 @@ namespace LaserSystem
             cb_samplingDistance.SelectedIndex = settings.samplingDistanceSelectedIndex;
             try
             {
-                llaser = new LMS291_2(settings.comSettings.lComName, settings.comSettings.lBaudRate, stopwatch, true);
+                ScannerRepo.LeftLMS = new LMS291_3(settings.comSettings.lComName, settings.comSettings.lBaudRate, stopwatch, true);
+                Thread th6 = new Thread(RunLeftLMS);
+                th6.Name = "LeftLMS";
+                
+                th6.Start();
             }
             catch { }
             try
             {
-                rlaser = new LMS291_2(settings.comSettings.rComName, settings.comSettings.rBaudRate, stopwatch, false);
+                ScannerRepo.RightLMS = new LMS291_3(settings.comSettings.rComName, settings.comSettings.rBaudRate, stopwatch, false);
+                Thread th7 = new Thread(RunRightLMS);
+                th7.Name = "RightLMS";
+                th7.Start();
             }
             catch { }
             try
             {
-                gps = new NmeaReader(settings.comSettings.gpsComName, settings.comSettings.gpsBaudRate, stopwatch);
+                ScannerRepo.GPS = new NmeaReader(settings.comSettings.gpsComName, 38400, stopwatch);
+                Thread th3 = new Thread(RunGPS);
+                th3.Name = "gps";
+                th3.Start();
             }
             catch { }
 
-            gpsStatusChecker.RunWorkerAsync();
-            leftLaserStatusChecker.RunWorkerAsync();
-            rightLaserStatusChecker.RunWorkerAsync();
+            try
+            {
+                ScannerRepo.TopLeftACS = new ACS430(settings.comSettings.TopLeftACSComName, 38400, stopwatch);
+                Thread th1 = new Thread(RunTopLeftACS);
+                th1.Name = "topleftacs";
+                th1.Start();
+            }
+            catch { } 
+
+            List<ACS430> ACSs = new List<ACS430>();
+            for (int i = 9; i <= 16; i++)
+            {
+
+            }
+
+            try
+            {
+                ScannerRepo.BottomLeftACS = new ACS430(settings.comSettings.BottomLeftACSComName, 38400, stopwatch);
+                Thread th2 = new Thread(RunBottomLeftACS);
+                th2.Name = "bottomleftacs";
+                th2.Start();
+            }
+            catch { }
+            try
+            {
+                ScannerRepo.TopRightACS = new ACS430(settings.comSettings.TopRightACSComName, 38400, stopwatch);
+                Thread th4 = new Thread(RunTopRightACS);
+                th4.Name = "TopRightACS";
+                th4.Start();
+            }
+            catch { }
+            try
+            {
+                ScannerRepo.BottomRightACS = new ACS430(settings.comSettings.BottomRightACSComName, 38400, stopwatch);
+                Thread th5 = new Thread(RunBottomRightACS);
+                th5.Name = "BottomRightACS";
+                th5.Start();
+            }
+            catch { }
+
+
+            timer = new System.Timers.Timer(1000);
+            
+            timer.Elapsed += timer_Elapsed;
+            timer.Start();
+        }
+
+        void timer_Elapsed(object sender, ElapsedEventArgs e)
+        {
+            GetScans();
+        }
+
+        void GetScans()
+        {
+            NmeaSentence sentence;
+            LmsScan2 lmsScan;
+            ACS430Reading acsReading;
+            ACS430Reading reading;
+            LmsScan2 scan;
+            bool topleft = false;
+            bool topright = false;
+            bool bottomleft = false;
+            bool bottomright = false;
+            bool gps = false;
+            bool leftlms = false;
+            bool rightlms = false;
+            
+            while (GPSReadings.TryPeek(out sentence) | LeftLMSReadings.TryPeek(out lmsScan) |
+                RightLMSReadings.TryPeek(out lmsScan) | TopLeftACSReadings.TryPeek(out acsReading) |
+                BottomLeftACSReadings.TryPeek(out acsReading) | TopRightACSReadings.TryPeek(out acsReading) |
+                BottomRightACSReadings.TryPeek(out acsReading))
+            {
+                if (TopLeftACSReadings.TryDequeue(out reading) != false)
+                {
+                    topleft = true;
+                }
+
+                if (BottomLeftACSReadings.TryDequeue(out reading) != false)
+                {
+                    bottomleft = true;
+                }
+
+                if (TopRightACSReadings.TryDequeue(out reading) != false)
+                {
+                    topright = true;
+                }
+
+                if (BottomRightACSReadings.TryDequeue(out reading) != false)
+                {
+                    bottomright = true;
+                }
+
+                if (GPSReadings.TryDequeue(out sentence) != false)
+                {
+                    gps = true;
+                }
+
+                if (LeftLMSReadings.TryDequeue(out scan) != false)
+                {
+                    leftlms = true;
+                }
+
+                if (RightLMSReadings.TryDequeue(out scan) != false)
+                {
+                    rightlms = true;
+                }
+            }
+
+            SetSensorPanel(panel_leftLaser, leftlms, chkbox_leftLaser.Checked);
+            SetSensorPanel(panel_topLeftACS, topleft, chkbox_leftLaser.Checked);
+            SetSensorPanel(panel_BottomLeftACS, bottomleft, chkbox_leftLaser.Checked);
+            SetSensorPanel(panel_rightLaser, rightlms, chkbox_rightLaser.Checked);
+            SetSensorPanel(panel_TopRightACS, topright, chkbox_rightLaser.Checked);
+            SetSensorPanel(panel_BottomRightACS, bottomright, chkbox_rightLaser.Checked);
+            SetSensorPanel(panel_GPS, gps, true);
+
+            
+        }
+
+        private void SetSensorPanel(Panel panel, bool working, bool enabled)
+        {
+            if (!enabled)
+            {
+                panel.BackColor = Color.Gray;
+            }
+            else if (working)
+            {
+                panel.BackColor = Color.Green;
+            }
+            else
+            {
+                panel.BackColor = Color.Red;
+            }
         }
 
         private void btn_saveSettings_Click(object sender, EventArgs e)
@@ -133,279 +285,14 @@ namespace LaserSystem
             }
         }
 
-        private void chkbox_rightLaser_CheckedChanged(object sender, EventArgs e)
-        {
-            if (chkbox_rightLaser.Checked)
-            {
-                panel_rightLaser.BackColor = Color.Green;
-            }
-            else
-            {
-                panel_rightLaser.BackColor = Color.Gray;
-            }
-        }
 
 
         private void setCOMPortsToolStripMenuItem_Click(object sender, EventArgs e)
         {
             frmComPorts comPortsForm = new frmComPorts(settings);
             comPortsForm.ShowDialog();
-            
-
-            if(settings.comSettings.lComName != "" & (llaser == null || llaser.port.PortName != settings.comSettings.lComName))
-            {
-                leftLaserStatusChecker.CancelAsync();
-                Thread.Sleep(5);
-                if(llaser != null)
-                    llaser.close();
-                try
-                {
-                    llaser = new LMS291_2(settings.comSettings.lComName, settings.comSettings.lBaudRate, stopwatch, true);
-                    leftLaserStatusChecker.RunWorkerAsync();
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show(err.Message);
-                }
-            }
-
-
-            if (settings.comSettings.rComName != "" & (rlaser == null || rlaser.port.PortName != settings.comSettings.rComName))
-            {
-                rightLaserStatusChecker.CancelAsync();
-                Thread.Sleep(5);
-                if(rlaser != null)
-                    rlaser.close();
-
-                try
-                {
-                    rlaser = new LMS291_2(settings.comSettings.rComName, settings.comSettings.rBaudRate, stopwatch, false);
-                    rightLaserStatusChecker.RunWorkerAsync();
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show(err.Message);
-                }
-            }
-
-            if (settings.comSettings.gpsComName != "" & (gps == null || gps.port.PortName != settings.comSettings.rComName))
-            {
-                gpsStatusChecker.CancelAsync();
-                Thread.Sleep(5);
-                if (gps != null)
-                    rlaser.close();
-                try
-                {
-                    gps = new NmeaReader(settings.comSettings.gpsComName, settings.comSettings.gpsBaudRate, stopwatch);
-                    gpsStatusChecker.RunWorkerAsync();
-
-                }
-                catch (Exception err)
-                {
-                    MessageBox.Show(err.Message);
-                }
-            }
-        }
-        private void LaserCheckerDoWork(Panel panel, CheckBox chkbox, LMS291_2 laser, BackgroundWorker worker, string comName, int baudRate, List<LmsScan2> scanlist, bool leftLaser)
-        {
-            while (worker.CancellationPending != true)
-            {
-                try
-                {
-                    if (!chkbox.Checked)
-                    {
-                        panel.BackColor = Color.Gray;
-                    }
-                    
-                    if (comName == "")
-                    {
-                        panel.BackColor = Color.Red;
-                    }
-                    if(laser == null)
-                        laser = new LMS291_2(comName, baudRate, stopwatch, leftLaser);
-                    laser.StartContinuousScan();
-                    Thread.Sleep(200);
-                    laser.StartContinuousScan();
-                    Thread.Sleep(200);
-                    laser.StartContinuousScan();
-                    while (worker.CancellationPending != true)
-                    {
-                        if (CheckLaser(laser, scanlist))
-                        {
-                            worker.ReportProgress(100);
-                        }
-                        else
-                        {
-                            worker.ReportProgress(0);
-                        }
-                        if (worker.CancellationPending)
-                        {
-                            return;
-                        }
-                        if (chkbox.Checked)
-                            Thread.Sleep(1000);
-                        else
-                        {
-                            panel.BackColor = Color.Gray;
-                            Thread.Sleep(1000);
-                        }
-                    }
-                }
-                catch
-                {
-                    panel.BackColor = Color.Red;
-                    Thread.Sleep(1000);
-                }
-            }
-        }
-        private void LeftLaserChecker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            LaserCheckerDoWork(panel_leftLaser, chkbox_leftLaser, llaser, sender as BackgroundWorker, settings.comSettings.lComName, settings.comSettings.lBaudRate, leftscans, true);
         }
 
-        private void RightLaserChecker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            LaserCheckerDoWork(panel_rightLaser, chkbox_rightLaser, rlaser, sender as BackgroundWorker, settings.comSettings.rComName, settings.comSettings.rBaudRate, rightscans, false);
-        }
-
-        private void GPSChecker_DoWork(object sender, DoWorkEventArgs e)
-        {
-            BackgroundWorker worker = sender as BackgroundWorker;
-            while (worker.CancellationPending != true)
-            {
-                try
-                {
-                    if(gps == null)
-                        gps = new NmeaReader(settings.comSettings.gpsComName, settings.comSettings.gpsBaudRate, stopwatch);
-
-                    while (worker.CancellationPending != true)
-                    {
-                        Thread.Sleep(1000);
-                        if (CheckGPS())
-                        {
-                            gpsStatusChecker.ReportProgress(100);
-                        }
-                        else
-                        {
-                            gpsStatusChecker.ReportProgress(0);
-                        }
-                    }
-                }
-                catch
-                {
-                    panel_GPS.BackColor = Color.Red;
-                    Thread.Sleep(1000);
-                }
-            }
-        }
-
-        private bool CheckGPS()
-        {
-            long elapsedSeconds = stopwatch.ElapsedMilliseconds;
-
-            while (stopwatch.ElapsedMilliseconds < elapsedSeconds + 500)
-            {
-                gps.read();
-            }
-            if (gps.readings.Count > 0)
-            {
-                gps.readings = new System.Collections.Concurrent.ConcurrentQueue<NmeaSentence>();
-                return true;
-            }
-            return false;
-        }
-
-        private bool CheckRightLaser()
-        {
-            long currMilliseconds = stopwatch.ElapsedMilliseconds;
-            while (stopwatch.ElapsedMilliseconds < currMilliseconds + 500)
-            {
-                rlaser.read();
-            }
-            if (rlaser.scans.Count > 0)
-            {
-                rlaser.scans = new System.Collections.Concurrent.ConcurrentQueue<LmsScan2>();
-                return true;
-            }
-            else
-                return false;
-        }
-        
-        private bool CheckLeftLaser()
-        {
-            long currMilliseconds = stopwatch.ElapsedMilliseconds;
-            while (stopwatch.ElapsedMilliseconds < currMilliseconds + 500)
-            {
-                llaser.read();
-            }
-            if (llaser.scans.Count > 0)
-            {
-                llaser.scans = new System.Collections.Concurrent.ConcurrentQueue<LmsScan2>();
-                return true;
-            }
-            else
-                return false;
-        }
-        private bool CheckLaser(LMS291_2 laser, List<LmsScan2> scanlist)
-        {
-            LmsScan2 scan;
-            long currMilliseconds = stopwatch.ElapsedMilliseconds;
-            while (stopwatch.ElapsedMilliseconds < currMilliseconds + 500)
-            {
-                scan = laser.read();
-                if (scan != null)
-                {
-                    scanlist.Add(scan);
-                }
-            }
-            if (scanlist.Count > 0)
-            {
-                scanlist.Clear();
-                return true;
-            }
-            else
-                return false;
-        }
-
-        private void GPSStatusChecker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            if (e.ProgressPercentage == 100)
-            {
-                panel_GPS.BackColor = Color.Green;
-            }
-            else
-            {
-                panel_GPS.BackColor = Color.Red;
-            }
-        }
-
-        private void rightLaserChecker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            if (chkbox_rightLaser.Checked == false)
-            {
-                panel_rightLaser.BackColor = Color.Gray;
-            }
-            else if (e.ProgressPercentage == 100)
-            {
-                panel_rightLaser.BackColor = Color.Green;
-            }
-            else
-            {
-                panel_rightLaser.BackColor = Color.Red;
-            }
-        }
-
-        private void leftLaserStatusChecker_ProgressChanged(object sender, ProgressChangedEventArgs e)
-        {
-            if (e.ProgressPercentage == 100)
-            {
-                panel_leftLaser.BackColor = Color.Green;
-            }
-            else
-            {
-                panel_leftLaser.BackColor = Color.Red;
-            }
-        }
 
         private void btn_StartScanning_Click(object sender, EventArgs e)
         {
@@ -426,11 +313,97 @@ namespace LaserSystem
             GetSettingsFromForm();
             DisableInterface();
             btn_StopScanning.Enabled = true;
-            leftLaserStatusChecker.CancelAsync();
-            rightLaserStatusChecker.CancelAsync();
-            gpsStatusChecker.CancelAsync();
 
             ScanRunnerWorker.RunWorkerAsync();
+            
+        }
+
+
+
+        private void ScanRunnerWorker_DoWork(object sender, DoWorkEventArgs e)
+        {
+            TwoCropCircles tcc = new TwoCropCircles(
+                TopLeftACSReadings,
+                BottomLeftACSReadings,
+                TopRightACSReadings,
+                BottomRightACSReadings,
+                GPSReadings,
+                LeftLMSReadings,
+                RightLMSReadings,
+                settings,
+                stopwatch);
+            try
+            {
+                stopwatch.Restart();
+                BackgroundWorker worker = sender as BackgroundWorker;
+                while (worker.CancellationPending != true)
+                {
+                    tcc.Run();
+                }
+                Stopwatch sw = new Stopwatch();
+                sw.Start();
+                while (sw.Elapsed.Seconds < 2)
+                {
+                    tcc.Run();
+                }
+                tcc.Stop();
+            }
+            catch (Exception err)
+            {
+                Console.Beep(5000, 1000);
+                MessageBox.Show(err.Message);
+                MessageBox.Show(err.StackTrace);
+                using (StreamWriter w = File.AppendText(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "log.txt"))
+                {
+                    Log(err.Message, w);
+                    Log(err.StackTrace, w);
+                    Log(err.Source, w);
+                    
+
+                }
+                MessageBox.Show("Trying to save...");
+                try
+                {
+                    MessageBox.Show("Save worked!");
+
+                }
+                catch (Exception err1)
+                {
+                    using (StreamWriter w = File.AppendText(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "log.txt"))
+                    {
+                        Log(err1.Message, w);
+                        Log(err1.StackTrace, w);
+                        Log(err1.Source, w);
+                    }
+                    MessageBox.Show("Save failed.");
+                }
+            }
+        }
+        private void btn_StopScanning_Click(object sender, EventArgs e)
+        {
+            if (ScanRunnerWorker.IsBusy)
+            {
+                ScanRunnerWorker.CancelAsync();
+                btn_StopScanning.Text = "Finishing scan...";
+            }
+        }
+        
+
+        private void ScanRunnerWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
+        {
+            Thread.Sleep(1000);
+            try
+            {
+            }
+            catch (Exception)
+            {
+                
+            }
+            foreach (Control control in Controls)
+            {
+                control.Enabled = true;
+            }
+            btn_StopScanning.Text = "Stop Scanning";
         }
 
         private void GetSettingsFromForm()
@@ -453,90 +426,6 @@ namespace LaserSystem
                 control.Enabled = false;
             }
             btn_StopScanning.Enabled = true;
-        }
-
-        private void btn_StopScanning_Click(object sender, EventArgs e)
-        {
-            if (ScanRunnerWorker.IsBusy)
-            {
-                ScanRunnerWorker.CancelAsync();
-                btn_StopScanning.Text = "Finishing scan...";
-            }
-        }
-        
-        private void ScanRunnerWorker_DoWork(object sender, DoWorkEventArgs e)
-        {
-
-            Thread.Sleep(1000);
-            ScanRunner4 scanRunner = new ScanRunner4(settings, false, saveDataToolStripMenuItem.Checked, llaser, rlaser, gps);
-            try
-            {
-                
-                BackgroundWorker worker = sender as BackgroundWorker;
-                while (worker.CancellationPending != true)
-                {
-                    scanRunner.run();
-                }
-                Stopwatch sw = new Stopwatch();
-                sw.Start();
-                while (sw.Elapsed.Seconds < 3)
-                {
-                    scanRunner.run();
-                }
-                scanRunner.Stop();
-            }
-            catch (Exception err)
-            {
-                Console.Beep(5000, 1000);
-                MessageBox.Show(err.Message);
-                MessageBox.Show(err.StackTrace);
-                using (StreamWriter w = File.AppendText(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "log.txt"))
-                {
-                    Log(err.Message, w);
-                    Log(err.StackTrace, w);
-                    Log(err.Source, w);
-                    
-
-                }
-                MessageBox.Show("Trying to save...");
-                try
-                {
-                    scanRunner.Stop();
-                    MessageBox.Show("Save worked!");
-
-                }
-                catch (Exception err1)
-                {
-                    using (StreamWriter w = File.AppendText(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "log.txt"))
-                    {
-                        Log(err1.Message, w);
-                        Log(err1.StackTrace, w);
-                        Log(err1.Source, w);
-                    }
-                    MessageBox.Show("Save failed.");
-                }
-            }
-        }
-
-
-        private void ScanRunnerWorker_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            Thread.Sleep(1000);
-            try
-            {
-                leftLaserStatusChecker.RunWorkerAsync();
-                rightLaserStatusChecker.RunWorkerAsync();
-                gpsStatusChecker.RunWorkerAsync();
-            }
-            catch (Exception)
-            {
-                
-            }
-            foreach (Control control in Controls)
-            {
-                control.Enabled = true;
-            }
-            btn_StopScanning.Text = "Stop Scanning";
         }
 
         private void createGeodatabaseToolStripMenuItem_Click(object sender, EventArgs e)
@@ -571,5 +460,142 @@ namespace LaserSystem
             w.WriteLine("  :{0}", logMessage);
             w.WriteLine("-------------------------------");
         }
+
+        private void frm_main_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void RunACS(string portName, ConcurrentQueue<ACS430Reading> queue, ACS430 acs)
+        {
+            ACS430 ACS = acs;
+            ACS430Reading reading = null;
+            while (true)
+            {
+                if (threadstop)
+                {
+                    break;
+                }
+                try
+                {
+                    reading = ACS.Read();
+                    if (reading != null)
+                    {
+                        queue.Enqueue(reading);
+                    }
+                }
+                catch (ThreadAbortException err)
+                {
+                    ACS.Close();
+                    break;
+                }
+                catch (ObjectDisposedException err)
+                {
+                    break;
+                }
+            }
+        }
+        private void RunGPS()
+        {
+            NmeaReader gps = ScannerRepo.GPS;
+            NmeaSentence sentence;
+            while (true)
+            {
+                if (threadstop)
+                {
+                    break;
+                }
+                try
+                {
+                    gps.read();
+                    if (gps.readings.TryDequeue(out sentence) != false)
+                    {
+                        GPSReadings.Enqueue(sentence);
+                    }
+                }
+                catch (ThreadAbortException err)
+                {
+                    gps.close();
+                    break;
+                }
+
+                catch (ObjectDisposedException err)
+                {
+                    break;
+                }
+
+            }
+        }
+        public void RunLeftLMS()
+        {
+            LMS291_3 lms = ScannerRepo.LeftLMS;
+            LmsScan2 scan;
+            lms.StartContinuousScan();
+            Thread.Sleep(1);
+            lms.StartContinuousScan();
+            Thread.Sleep(1);
+            while (true)
+            {
+                if (threadstop)
+                {
+                    break;
+                }
+                scan = lms.read();
+                if (scan != null)
+                {
+                    LeftLMSReadings.Enqueue(scan);
+                }
+            }
+        }
+
+        public void RunRightLMS()
+        {
+            LMS291_3 lms = ScannerRepo.RightLMS;
+            LmsScan2 scan;
+            lms.StartContinuousScan();
+            Thread.Sleep(1);
+            lms.StartContinuousScan();
+            Thread.Sleep(1);
+
+            while (true)
+            {
+                if (threadstop)
+                {
+                    break;
+                }
+                scan = lms.read();
+                if (scan != null)
+                {
+                    RightLMSReadings.Enqueue(scan);
+                }
+            }
+        }
+
+        public void RunTopLeftACS()
+        {
+            RunACS(settings.comSettings.TopLeftACSComName, TopLeftACSReadings, ScannerRepo.TopLeftACS);
+        }
+
+        public void RunTopRightACS()
+        {
+            RunACS(settings.comSettings.TopRightACSComName, TopRightACSReadings, ScannerRepo.TopRightACS);
+        }
+
+        public void RunBottomLeftACS()
+        {
+            RunACS(settings.comSettings.BottomLeftACSComName, BottomLeftACSReadings, ScannerRepo.BottomLeftACS);
+        }
+
+        public void RunBottomRightACS()
+        {
+            RunACS(settings.comSettings.BottomRightACSComName, BottomRightACSReadings, ScannerRepo.BottomRightACS);
+        }
+
+        private void frm_main_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            threadstop = true;
+        }
+
+
     }
 }

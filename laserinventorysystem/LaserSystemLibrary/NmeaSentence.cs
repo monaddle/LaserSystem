@@ -10,11 +10,8 @@ namespace LaserSystemLibrary
     public class NmeaSentence
     {
         public DateTime timestamp;
-        public String[] buffer;
-        public long ticks;
+        public String buffer;
+        public double milliseconds;
 
-        public NmeaSentence()
-        {
-        }
     }
 }

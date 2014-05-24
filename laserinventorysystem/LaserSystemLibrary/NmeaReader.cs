@@ -57,11 +57,11 @@ namespace LaserSystemLibrary
 
                 try
                 {
-                    String[] gpgga = str.Substring(index, 67).Split(',');
+                    String gpgga = str.Substring(index, 67);
                     sentence.buffer = gpgga;
-                    sentence.ticks = stopwatch.ElapsedTicks;
-
-                    Console.WriteLine("Latittude:{0}{1}, Longitude:{2}{3}, altitude:{4}", gpgga[2], gpgga[3], gpgga[4], gpgga[5], gpgga[9]);
+                    sentence.milliseconds = stopwatch.Elapsed.TotalMilliseconds;
+                    string[] split = gpgga.Split(',');
+                    //Console.WriteLine("Latittude:{0}{1}, Longitude:{2}{3}, altitude:{4}", split[2], split[3], split[4], split[5], split[9]);
                     readings.Enqueue(sentence);
                     BytesRead = 0;
                     chars = new char[200];

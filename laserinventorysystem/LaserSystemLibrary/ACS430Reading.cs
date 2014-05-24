@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace testcropsensors
+namespace LaserSystemLibrary
 {
     [Serializable]
     public class ACS430Reading
@@ -15,7 +15,6 @@ namespace testcropsensors
         public double NDRE;
         public double NDVI;
         public double Milliseconds;
-
         public ACS430Reading(double milliseconds, double redEdge, double nir, double red, double ndre, double ndvi)
         {
             Milliseconds = milliseconds;

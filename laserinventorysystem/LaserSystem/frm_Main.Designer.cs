@@ -43,6 +43,14 @@
             this.btn_saveSettings = new System.Windows.Forms.Button();
             this.label3 = new System.Windows.Forms.Label();
             this.panel2 = new System.Windows.Forms.Panel();
+            this.lbl_BottomRightACS = new System.Windows.Forms.Label();
+            this.label11 = new System.Windows.Forms.Label();
+            this.lbl_BottomLeftACS = new System.Windows.Forms.Label();
+            this.lbl_TopLeftACS = new System.Windows.Forms.Label();
+            this.panel_TopRightACS = new System.Windows.Forms.Panel();
+            this.panel_BottomLeftACS = new System.Windows.Forms.Panel();
+            this.panel_BottomRightACS = new System.Windows.Forms.Panel();
+            this.panel_topLeftACS = new System.Windows.Forms.Panel();
             this.chkbox_rightLaser = new System.Windows.Forms.CheckBox();
             this.chkbox_leftLaser = new System.Windows.Forms.CheckBox();
             this.panel_rightLaser = new System.Windows.Forms.Panel();
@@ -60,9 +68,6 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setCOMPortsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.leftLaserStatusChecker = new System.ComponentModel.BackgroundWorker();
-            this.rightLaserStatusChecker = new System.ComponentModel.BackgroundWorker();
-            this.gpsStatusChecker = new System.ComponentModel.BackgroundWorker();
             this.btn_StartScanning = new System.Windows.Forms.Button();
             this.btn_StopScanning = new System.Windows.Forms.Button();
             this.ScanRunnerWorker = new System.ComponentModel.BackgroundWorker();
@@ -216,6 +221,14 @@
             // panel2
             // 
             this.panel2.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel2.Controls.Add(this.lbl_BottomRightACS);
+            this.panel2.Controls.Add(this.label11);
+            this.panel2.Controls.Add(this.lbl_BottomLeftACS);
+            this.panel2.Controls.Add(this.lbl_TopLeftACS);
+            this.panel2.Controls.Add(this.panel_TopRightACS);
+            this.panel2.Controls.Add(this.panel_BottomLeftACS);
+            this.panel2.Controls.Add(this.panel_BottomRightACS);
+            this.panel2.Controls.Add(this.panel_topLeftACS);
             this.panel2.Controls.Add(this.chkbox_rightLaser);
             this.panel2.Controls.Add(this.chkbox_leftLaser);
             this.panel2.Controls.Add(this.panel_rightLaser);
@@ -230,29 +243,104 @@
             this.panel2.Size = new System.Drawing.Size(297, 304);
             this.panel2.TabIndex = 8;
             // 
+            // lbl_BottomRightACS
+            // 
+            this.lbl_BottomRightACS.AutoSize = true;
+            this.lbl_BottomRightACS.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_BottomRightACS.Location = new System.Drawing.Point(68, 214);
+            this.lbl_BottomRightACS.Name = "lbl_BottomRightACS";
+            this.lbl_BottomRightACS.Size = new System.Drawing.Size(114, 16);
+            this.lbl_BottomRightACS.TabIndex = 12;
+            this.lbl_BottomRightACS.Text = "Bottom Right ACS";
+            // 
+            // label11
+            // 
+            this.label11.AutoSize = true;
+            this.label11.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label11.Location = new System.Drawing.Point(67, 185);
+            this.label11.Name = "label11";
+            this.label11.Size = new System.Drawing.Size(97, 16);
+            this.label11.TabIndex = 11;
+            this.label11.Text = "Top Right ACS";
+            // 
+            // lbl_BottomLeftACS
+            // 
+            this.lbl_BottomLeftACS.AutoSize = true;
+            this.lbl_BottomLeftACS.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_BottomLeftACS.Location = new System.Drawing.Point(67, 104);
+            this.lbl_BottomLeftACS.Name = "lbl_BottomLeftACS";
+            this.lbl_BottomLeftACS.Size = new System.Drawing.Size(104, 16);
+            this.lbl_BottomLeftACS.TabIndex = 10;
+            this.lbl_BottomLeftACS.Text = "Bottom Left ACS";
+            // 
+            // lbl_TopLeftACS
+            // 
+            this.lbl_TopLeftACS.AutoSize = true;
+            this.lbl_TopLeftACS.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.lbl_TopLeftACS.Location = new System.Drawing.Point(69, 70);
+            this.lbl_TopLeftACS.Name = "lbl_TopLeftACS";
+            this.lbl_TopLeftACS.Size = new System.Drawing.Size(87, 16);
+            this.lbl_TopLeftACS.TabIndex = 9;
+            this.lbl_TopLeftACS.Text = "Top Left ACS";
+            // 
+            // panel_TopRightACS
+            // 
+            this.panel_TopRightACS.BackColor = System.Drawing.Color.Red;
+            this.panel_TopRightACS.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel_TopRightACS.Location = new System.Drawing.Point(21, 178);
+            this.panel_TopRightACS.Name = "panel_TopRightACS";
+            this.panel_TopRightACS.Size = new System.Drawing.Size(24, 24);
+            this.panel_TopRightACS.TabIndex = 4;
+            // 
+            // panel_BottomLeftACS
+            // 
+            this.panel_BottomLeftACS.BackColor = System.Drawing.Color.Red;
+            this.panel_BottomLeftACS.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel_BottomLeftACS.Location = new System.Drawing.Point(21, 100);
+            this.panel_BottomLeftACS.Name = "panel_BottomLeftACS";
+            this.panel_BottomLeftACS.Size = new System.Drawing.Size(24, 24);
+            this.panel_BottomLeftACS.TabIndex = 4;
+            // 
+            // panel_BottomRightACS
+            // 
+            this.panel_BottomRightACS.BackColor = System.Drawing.Color.Red;
+            this.panel_BottomRightACS.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel_BottomRightACS.Location = new System.Drawing.Point(21, 208);
+            this.panel_BottomRightACS.Name = "panel_BottomRightACS";
+            this.panel_BottomRightACS.Size = new System.Drawing.Size(24, 24);
+            this.panel_BottomRightACS.TabIndex = 4;
+            // 
+            // panel_topLeftACS
+            // 
+            this.panel_topLeftACS.BackColor = System.Drawing.Color.Red;
+            this.panel_topLeftACS.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel_topLeftACS.Location = new System.Drawing.Point(21, 70);
+            this.panel_topLeftACS.Name = "panel_topLeftACS";
+            this.panel_topLeftACS.Size = new System.Drawing.Size(24, 24);
+            this.panel_topLeftACS.TabIndex = 3;
+            // 
             // chkbox_rightLaser
             // 
             this.chkbox_rightLaser.AutoSize = true;
             this.chkbox_rightLaser.Checked = true;
             this.chkbox_rightLaser.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkbox_rightLaser.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkbox_rightLaser.Location = new System.Drawing.Point(185, 117);
+            this.chkbox_rightLaser.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkbox_rightLaser.Location = new System.Drawing.Point(167, 153);
             this.chkbox_rightLaser.Name = "chkbox_rightLaser";
-            this.chkbox_rightLaser.Size = new System.Drawing.Size(80, 28);
+            this.chkbox_rightLaser.Size = new System.Drawing.Size(64, 20);
             this.chkbox_rightLaser.TabIndex = 8;
             this.chkbox_rightLaser.Text = "Active";
             this.chkbox_rightLaser.UseVisualStyleBackColor = true;
-            this.chkbox_rightLaser.CheckedChanged += new System.EventHandler(this.chkbox_rightLaser_CheckedChanged);
             // 
             // chkbox_leftLaser
             // 
             this.chkbox_leftLaser.AutoSize = true;
             this.chkbox_leftLaser.Checked = true;
             this.chkbox_leftLaser.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.chkbox_leftLaser.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.chkbox_leftLaser.Location = new System.Drawing.Point(185, 50);
+            this.chkbox_leftLaser.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.chkbox_leftLaser.Location = new System.Drawing.Point(166, 46);
             this.chkbox_leftLaser.Name = "chkbox_leftLaser";
-            this.chkbox_leftLaser.Size = new System.Drawing.Size(80, 28);
+            this.chkbox_leftLaser.Size = new System.Drawing.Size(64, 20);
             this.chkbox_leftLaser.TabIndex = 7;
             this.chkbox_leftLaser.Text = "Active";
             this.chkbox_leftLaser.UseVisualStyleBackColor = true;
@@ -262,18 +350,18 @@
             // 
             this.panel_rightLaser.BackColor = System.Drawing.Color.Red;
             this.panel_rightLaser.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel_rightLaser.Location = new System.Drawing.Point(21, 109);
+            this.panel_rightLaser.Location = new System.Drawing.Point(21, 148);
             this.panel_rightLaser.Name = "panel_rightLaser";
-            this.panel_rightLaser.Size = new System.Drawing.Size(50, 50);
+            this.panel_rightLaser.Size = new System.Drawing.Size(24, 24);
             this.panel_rightLaser.TabIndex = 6;
             // 
             // label7
             // 
             this.label7.AutoSize = true;
-            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label7.Location = new System.Drawing.Point(77, 117);
+            this.label7.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label7.Location = new System.Drawing.Point(67, 154);
             this.label7.Name = "label7";
-            this.label7.Size = new System.Drawing.Size(104, 24);
+            this.label7.Size = new System.Drawing.Size(76, 16);
             this.label7.TabIndex = 5;
             this.label7.Text = "Right Laser";
             // 
@@ -283,16 +371,16 @@
             this.panel_leftLaser.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
             this.panel_leftLaser.Location = new System.Drawing.Point(21, 40);
             this.panel_leftLaser.Name = "panel_leftLaser";
-            this.panel_leftLaser.Size = new System.Drawing.Size(50, 50);
+            this.panel_leftLaser.Size = new System.Drawing.Size(24, 24);
             this.panel_leftLaser.TabIndex = 4;
             // 
             // label6
             // 
             this.label6.AutoSize = true;
-            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label6.Location = new System.Drawing.Point(77, 50);
+            this.label6.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label6.Location = new System.Drawing.Point(68, 45);
             this.label6.Name = "label6";
-            this.label6.Size = new System.Drawing.Size(90, 24);
+            this.label6.Size = new System.Drawing.Size(66, 16);
             this.label6.TabIndex = 3;
             this.label6.Text = "Left Laser";
             // 
@@ -300,18 +388,18 @@
             // 
             this.panel_GPS.BackColor = System.Drawing.Color.Red;
             this.panel_GPS.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel_GPS.Location = new System.Drawing.Point(21, 174);
+            this.panel_GPS.Location = new System.Drawing.Point(21, 255);
             this.panel_GPS.Name = "panel_GPS";
-            this.panel_GPS.Size = new System.Drawing.Size(50, 50);
+            this.panel_GPS.Size = new System.Drawing.Size(24, 24);
             this.panel_GPS.TabIndex = 2;
             // 
             // label5
             // 
             this.label5.AutoSize = true;
-            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.label5.Location = new System.Drawing.Point(78, 185);
+            this.label5.Font = new System.Drawing.Font("Microsoft Sans Serif", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.label5.Location = new System.Drawing.Point(68, 255);
             this.label5.Name = "label5";
-            this.label5.Size = new System.Drawing.Size(48, 24);
+            this.label5.Size = new System.Drawing.Size(36, 16);
             this.label5.TabIndex = 1;
             this.label5.Text = "GPS";
             // 
@@ -356,7 +444,7 @@
             // quitToolStripMenuItem
             // 
             this.quitToolStripMenuItem.Name = "quitToolStripMenuItem";
-            this.quitToolStripMenuItem.Size = new System.Drawing.Size(201, 30);
+            this.quitToolStripMenuItem.Size = new System.Drawing.Size(114, 30);
             this.quitToolStripMenuItem.Text = "Exit";
             this.quitToolStripMenuItem.Click += new System.EventHandler(this.quitToolStripMenuItem_Click);
             // 
@@ -382,27 +470,6 @@
             this.saveDataToolStripMenuItem.Name = "saveDataToolStripMenuItem";
             this.saveDataToolStripMenuItem.Size = new System.Drawing.Size(206, 30);
             this.saveDataToolStripMenuItem.Text = "Save Data";
-            // 
-            // leftLaserStatusChecker
-            // 
-            this.leftLaserStatusChecker.WorkerReportsProgress = true;
-            this.leftLaserStatusChecker.WorkerSupportsCancellation = true;
-            this.leftLaserStatusChecker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.LeftLaserChecker_DoWork);
-            this.leftLaserStatusChecker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.leftLaserStatusChecker_ProgressChanged);
-            // 
-            // rightLaserStatusChecker
-            // 
-            this.rightLaserStatusChecker.WorkerReportsProgress = true;
-            this.rightLaserStatusChecker.WorkerSupportsCancellation = true;
-            this.rightLaserStatusChecker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.RightLaserChecker_DoWork);
-            this.rightLaserStatusChecker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.rightLaserChecker_ProgressChanged);
-            // 
-            // gpsStatusChecker
-            // 
-            this.gpsStatusChecker.WorkerReportsProgress = true;
-            this.gpsStatusChecker.WorkerSupportsCancellation = true;
-            this.gpsStatusChecker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.GPSChecker_DoWork);
-            this.gpsStatusChecker.ProgressChanged += new System.ComponentModel.ProgressChangedEventHandler(this.GPSStatusChecker_ProgressChanged);
             // 
             // btn_StartScanning
             // 
@@ -446,6 +513,8 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "frm_main";
             this.Text = "Folear Inventory System";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frm_main_FormClosing);
+            this.Load += new System.EventHandler(this.frm_main_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -487,9 +556,6 @@
         private System.Windows.Forms.ToolStripMenuItem quitToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem settingsToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem setCOMPortsToolStripMenuItem;
-        private System.ComponentModel.BackgroundWorker leftLaserStatusChecker;
-        private System.ComponentModel.BackgroundWorker rightLaserStatusChecker;
-        private System.ComponentModel.BackgroundWorker gpsStatusChecker;
         private System.Windows.Forms.Button btn_StopScanning;
         private System.Windows.Forms.Button btn_StartScanning;
         private System.ComponentModel.BackgroundWorker ScanRunnerWorker;
@@ -497,6 +563,14 @@
         private System.Windows.Forms.TextBox txtBox_MinHeight;
         private System.Windows.Forms.Label lbl_MinHeight;
         private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.Panel panel_topLeftACS;
+        private System.Windows.Forms.Panel panel_TopRightACS;
+        private System.Windows.Forms.Panel panel_BottomLeftACS;
+        private System.Windows.Forms.Panel panel_BottomRightACS;
+        private System.Windows.Forms.Label lbl_BottomRightACS;
+        private System.Windows.Forms.Label label11;
+        private System.Windows.Forms.Label lbl_BottomLeftACS;
+        private System.Windows.Forms.Label lbl_TopLeftACS;
     }
 }
 

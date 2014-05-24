@@ -14,6 +14,7 @@ namespace testcropsensors
     {
         static void Main(string[] args)
         {
+
             TwoCropCircles tcc = new TwoCropCircles();
             tcc.Run();
             return;

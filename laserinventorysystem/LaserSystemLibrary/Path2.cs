@@ -10,8 +10,8 @@ namespace LaserSystemLibrary
 {
     public class Path2
     {
-        List<ScanLocation> LeftTicks = new List<ScanLocation>();
-        List<ScanLocation> RightTicks = new List<ScanLocation>();
+        public List<ScanLocation> LeftTicks = new List<ScanLocation>();
+        public List<ScanLocation> RightTicks = new List<ScanLocation>();
         List<ScanLocation> LeftTicksSave = new List<ScanLocation>();
         List<ScanLocation> RightTicksSave = new List<ScanLocation>();
         public Dictionary<int, List<LmsScan2>> LeftScanDict;
@@ -44,8 +44,8 @@ namespace LaserSystemLibrary
             FakeReadings = fakeReadings;
             this.SamplingDistance = options.samplingDistance * FEET_TO_METERS;
             scanningOptions = options;
-            gw = new ShapefileWriter(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + date + options.OutputFileName + ".shp");
-            points = new ShapefileWriter(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + date + options.OutputFileName + "points.shp");
+            //gw = new ShapefileWriter(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + date + options.OutputFileName + ".shp");
+            //points = new ShapefileWriter(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + date + options.OutputFileName + "points.shp");
             LaserScanUtilities.FakeScans = fakeReadings;
             LaserScanUtilities.calculateLowestAngle(options.rowDistance, options.laserHeight);
             SaveReadings = saveReadings;
@@ -111,7 +111,7 @@ namespace LaserSystemLibrary
             {
                 tick = lineSegment.GetTickAtDistance(0);
                 ScanLocation leftloc = new ScanLocation();
-                LaserScanUtilities.TickOffset offset = LaserScanUtilities.CalculateTickOffset(tick.xySlope, scanningOptions.rowDistance * 0.3048);
+                LaserScanUtilities.TickOffset offset = LaserScanUtilities.CalculateTickOffset(tick.xySlope, scanningOptions.rowDistance * FEET_TO_METERS, pointXYZ1, pointXYZ2);
                 leftloc.tick = tick.tick;
 
                 pointXYZ tempPoint = new pointXYZ();
@@ -246,43 +246,6 @@ namespace LaserSystemLibrary
         //    gw.writeBatch(leftGeoreferencedScans);
         //}
 
-        private List<GeoreferencedScan> MatchTicksWithScans(List<ScanLocation> ticks, List<LmsScan2> lmsScans, bool LeftScan)
-        {
-            List<GeoreferencedScan> scansToWrite = new List<GeoreferencedScan>();
-
-            if (lmsScans.Count >= 75)
-            {
-                while (ticks.Count > 0 && Convert.ToDouble(ticks[0].tick) / Stopwatch.Frequency * 1000 < lmsScans[74].milliseconds)
-                {
-                    //Console.WriteLine("Ticks milliseconds: {0}, scan milliseconds: {1}", Convert.ToDouble(ticks[0].tick) / Stopwatch.Frequency * 1000, lmsRightScans[74].milliseconds);
-                    int closestIndex = 0;
-                    // set to an arbitrarily large number
-                    double closestDistance = 10000;
-                    double tickMilliseconds = Convert.ToDouble(ticks[0].tick) * 1000.0 / Stopwatch.Frequency;
-                    for (int i = 0; i < 75; i++)
-                    {
-                        if (Math.Abs(tickMilliseconds - lmsScans[i].milliseconds) < closestDistance)
-                        {
-                            closestIndex = i;
-                            closestDistance = Math.Abs(tickMilliseconds - lmsScans[i].milliseconds);
-                        }
-                    }
-
-                    GeoreferencedScan geoscan = new GeoreferencedScan();
-                    geoscan.Point = ticks[0].point;
-                    geoscan.scanResults = lmsScans[closestIndex].scanResults;
-                        
-                    //Console.WriteLine("Scan results Density: {0}, Skirtheight: {1}, treeHeight:{2}", geoscan.scanResults.Density, geoscan.scanResults.SkirtHeight, geoscan.scanResults.TreeHeight);
-                    scansToWrite.Add(geoscan);
-                    ticks.RemoveAt(0);
-
-                };
-                lmsScans.RemoveRange(0, 75);
-
-            }
-
-            return scansToWrite;
-        }
         public void Close()
         {
 

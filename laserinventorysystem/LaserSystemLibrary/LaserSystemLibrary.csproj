@@ -54,8 +54,14 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ACS430.cs" />
+    <Compile Include="ACS430Reading.cs" />
     <Compile Include="ACSShapefileWriter.cs" />
+    <Compile Include="ACSThread.cs" />
     <Compile Include="Class1.cs" />
+    <Compile Include="GPSPath.cs" />
+    <Compile Include="GPSVector.cs" />
+    <Compile Include="LMS291_3.cs" />
     <Compile Include="Path2.cs" />
     <Compile Include="GeoreferencedScan.cs" />
     <Compile Include="GeoUTMConverter.cs" />
@@ -72,10 +78,14 @@
     <Compile Include="SavedScanProcessor.cs" />
     <Compile Include="ScanGroup.cs" />
     <Compile Include="ScanLocation.cs" />
+    <Compile Include="ScannerRepo.cs" />
     <Compile Include="ScanningOptions.cs" />
+    <Compile Include="ScanRepo.cs" />
     <Compile Include="ScanResults.cs" />
     <Compile Include="ScanRunner4.cs" />
+    <Compile Include="SensorLogger.cs" />
     <Compile Include="ShapefileWriter.cs" />
+    <Compile Include="TwoCropCircles.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

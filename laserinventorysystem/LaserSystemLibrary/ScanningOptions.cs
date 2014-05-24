@@ -16,6 +16,11 @@ namespace LaserSystemLibrary
         public int rBaudRate;
         public string gpsComName;
         public int gpsBaudRate;
+        public string TopLeftACSComName;
+        public string BottomLeftACSComName;
+        public string TopRightACSComName;
+        public string BottomRightACSComName;
+        
     }
 
     public class ScanningOptions
@@ -60,6 +65,7 @@ namespace LaserSystemLibrary
                 minHeight = defaultMinHeight;
                 useLeftLaser = true;
                 useRightLaser = true;
+                fakeReadings = false;
                 comSettings = new ComSettings();
             }
         }

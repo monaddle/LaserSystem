@@ -150,6 +150,7 @@ namespace LaserSystemLibrary
             }
             catch
             {
+
             }
         }
         public pointXYZ parseGPSReading(NmeaSentence gpsReading)
@@ -157,7 +158,7 @@ namespace LaserSystemLibrary
             try
             {
                 GeoUTMConverter utmConverter = new GeoUTMConverter();
-                string[] splitReading = gpsReading.buffer;
+                string[] splitReading = gpsReading.buffer.Split(',');
                 string latitude = splitReading[2];
                 string longitude = splitReading[4];
                 string zString = splitReading[9];
@@ -169,7 +170,7 @@ namespace LaserSystemLibrary
                 point.x = utmConverter.X;
                 point.y = utmConverter.Y;
                 point.z = Convert.ToDouble(zString);
-                point.t = gpsReading.ticks;
+                point.t = gpsReading.milliseconds;
                 return point;
             }
 

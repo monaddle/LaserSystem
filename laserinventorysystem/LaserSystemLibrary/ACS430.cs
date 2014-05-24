@@ -6,11 +6,11 @@ using System.Threading.Tasks;
 using System.IO.Ports;
 using System.Diagnostics;
 using System.Threading;
-namespace testcropsensors
+namespace LaserSystemLibrary
 {
-    class ACS430
+    public class ACS430
     {
-        SerialPort Port;
+        public SerialPort Port;
         char[] buffer = new char[100];
         int bytesread = 0;
         Stopwatch SW;
@@ -79,7 +79,7 @@ namespace testcropsensors
             return -1;
         }
 
-        internal void Close()
+        public void Close()
         {
             
             Port.Close();
