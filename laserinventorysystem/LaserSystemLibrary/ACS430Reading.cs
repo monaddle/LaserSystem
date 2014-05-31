@@ -25,4 +25,13 @@ namespace LaserSystemLibrary
             NDVI = ndvi;
         }
     }
+
+    public class ACS430Reading_2 : ACS430Reading
+    {
+        public char[] Buffer;
+        public ACS430Reading_2(char[] buffer, double milliseconds, double redEdge, double nir, double red, double ndre, double ndvi)
+        : base (milliseconds, red, nir, red, ndre, ndvi){
+            Buffer = buffer;
+        }
+    }
 }

@@ -6,6 +6,7 @@ using System.Diagnostics;
 using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System.IO;
+using System.Collections.Generic;
 namespace LaserSystemLibrary
 {
     public class Path2
@@ -22,6 +23,8 @@ namespace LaserSystemLibrary
         List<LmsScan> lmsLeftScansSave = new List<LmsScan>();
         List<GeoreferencedScan> GeoScans = new List<GeoreferencedScan>();
         List<GeoreferencedScan> RightGeoScans = new List<GeoreferencedScan>();
+        public Queue<ScanLocation> LeftTickQueue = new Queue<ScanLocation>();
+        public Queue<ScanLocation> RightTickQueue = new Queue<ScanLocation>();
         public bool LeftActive = true;
         public bool RightActive = true;
         double offset;
@@ -124,7 +127,7 @@ namespace LaserSystemLibrary
                     LeftTicks.Add(leftloc);
                 if (SaveReadings)
                     LeftTicksSave.Add(leftloc);
-                
+                LeftTickQueue.Enqueue(leftloc);
                 tempPoint = new pointXYZ();
                 tempPoint.t = tick.point.t;
                 tempPoint.x = tick.point.x + offset.X;
@@ -138,7 +141,7 @@ namespace LaserSystemLibrary
                     RightTicks.Add(rightloc);
                 if (SaveReadings)
                     RightTicksSave.Add(rightloc);
-
+                RightTickQueue.Enqueue(rightloc);
                 totalNumberOfTicks++;
             }
             for (int i = 1; i <= NumberOfTicks; i++)
@@ -165,7 +168,7 @@ namespace LaserSystemLibrary
                 leftloc.point = tempPoint;
                 if(LeftActive)
                     LeftTicks.Add(leftloc);
-
+                LeftTickQueue.Enqueue(leftloc);
                 tempPoint = new pointXYZ();
                 tempPoint.t = tick.point.t;
                 tempPoint.x = tick.point.x - tickOffset.X;
@@ -174,6 +177,7 @@ namespace LaserSystemLibrary
                 ScanLocation rightloc = new ScanLocation();
                 rightloc.tick = tick.tick;
                 rightloc.point = tempPoint;
+                RightTickQueue.Enqueue(rightloc);
                 if(RightActive)
                     RightTicks.Add(rightloc);
                 totalNumberOfTicks++;

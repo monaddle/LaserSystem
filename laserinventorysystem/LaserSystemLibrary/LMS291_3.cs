@@ -100,8 +100,8 @@ namespace LaserSystemLibrary
 
                         if (currentSecond != stopWatch.Elapsed.Seconds)
                         {
-                            //Console.WriteLine("number of scans this second: {0}", numberOfScansThisSecond);
-                            numberOfScansThisSecond = 0;
+                            Console.WriteLine("number of scans this second: {0}", numberOfScansThisSecond);
+                            numberOfScansThisSecond = 1;
                             currentSecond = stopWatch.Elapsed.Seconds;
                             numberOfSeconds++;
                             //Console.WriteLine("Second {0} scan average: {1}", currentSecond, Convert.ToDouble(numberOfScansFound) / numberOfSeconds);

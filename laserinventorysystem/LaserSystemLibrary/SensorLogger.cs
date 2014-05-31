@@ -21,11 +21,12 @@ namespace LaserSystemLibrary
         BinaryFormatter serializer = new BinaryFormatter();
         
         string FileTag;
-
+        public bool DummyLogging = false;
         public SensorLogger(string filePath, string fileTag)
         {
             this.FileTag = fileTag;
             TopLeftACSStream = File.Create(filePath + fileTag + "TopLeftACS.bin");
+            
             BottomLeftACSStream = File.Create(filePath + fileTag + "BottomLeftACS.bin");
             TopRightACSStream = File.Create(filePath + fileTag + "TopRightACS.bin");
             BottomRightACSStream = File.Create(filePath + fileTag + "BottomRightACS.bin");
@@ -36,36 +37,40 @@ namespace LaserSystemLibrary
 
         private void LogACS(Stream stream, ACS430Reading reading)
         {
-            serializer.Serialize(stream, reading);
+            if (!DummyLogging)
+                serializer.Serialize(stream, reading);
         }
 
         public void LogTopLeftACS(ACS430Reading reading)
         {
-            LogACS(TopLeftACSStream, reading);
+                LogACS(TopLeftACSStream, reading);
         }
         public void LogBottomLeftACS(ACS430Reading reading)
         {
-            LogACS(BottomLeftACSStream, reading);
+                LogACS(BottomLeftACSStream, reading);
         }
         public void LogTopRightACS(ACS430Reading reading)
         {
-            LogACS(TopRightACSStream, reading);
+                LogACS(TopRightACSStream, reading);
         }
         public void LogBottomRightACS(ACS430Reading reading)
         {
-            LogACS(BottomRightACSStream, reading);
+                LogACS(BottomRightACSStream, reading);
         }
         public void LogLeftLMS(LmsScan2 scan)
         {
-            serializer.Serialize(LeftLMSStream, scan);
+            if (!DummyLogging)
+                serializer.Serialize(LeftLMSStream, scan);
         }
         public void LogRightLMS(LmsScan2 scan)
         {
-            serializer.Serialize(RightLMSStream, scan);
+            if (!DummyLogging)
+                serializer.Serialize(RightLMSStream, scan);
         }
         public void LogGPS(NmeaSentence sentence)
         {
-            serializer.Serialize(GPSStream, sentence);
+            if (!DummyLogging)
+                serializer.Serialize(GPSStream, sentence);
         }
 
         public void Close()

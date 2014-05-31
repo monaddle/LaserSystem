@@ -43,14 +43,16 @@ namespace LaserSystemLibrary
 
         int currentSecond = 0;
 
-        public TwoCropCircles(  ConcurrentQueue<ACS430Reading> topRight,
-                                ConcurrentQueue<ACS430Reading> bottomRight,
-                                ConcurrentQueue<ACS430Reading> topLeft,
-                                ConcurrentQueue<ACS430Reading> bottomLeft,
-                                ConcurrentQueue<NmeaSentence> gpsReadings,
-                                ConcurrentQueue<LmsScan2> leftLMSreadings,
-                                ConcurrentQueue<LmsScan2> rightLMSreadings,
-                                ScanningOptions options,
+        public TwoCropCircles(
+            ConcurrentQueue<ACS430Reading> topLeft,
+            ConcurrentQueue<ACS430Reading> bottomLeft,
+            ConcurrentQueue<ACS430Reading> topRight,
+            ConcurrentQueue<ACS430Reading> bottomRight,
+
+            ConcurrentQueue<NmeaSentence> gpsReadings,
+            ConcurrentQueue<LmsScan2> leftLMSreadings,
+            ConcurrentQueue<LmsScan2> rightLMSreadings,
+            ScanningOptions options,
             Stopwatch stopWatch)
         {
             Options = options;
@@ -130,6 +132,8 @@ namespace LaserSystemLibrary
             ACS430Reading acsReading;
             ACS430Reading reading;
             LmsScan2 scan;
+            ScanRepo newLeftScans = new ScanRepo();
+            ScanRepo newRightScans = new ScanRepo();
             while (GPSReadings.TryPeek(out sentence) | LeftLMSReadings.TryPeek(out lmsScan) |
                 RightLMSReadings.TryPeek(out lmsScan) | TopLeftACSReadings.TryPeek(out acsReading) |
                 BottomLeftACSReadings.TryPeek(out acsReading) | TopRightACSReadings.TryPeek(out acsReading) |
@@ -140,6 +144,7 @@ namespace LaserSystemLibrary
                     WriteToConsole(string.Format("TOP LEFT ms: {0}, values: {1},{2},{3},{4},{5}",
                         reading.Milliseconds, reading.RedEdge, reading.NIR, reading.Red, reading.NDRE, reading.NDVI));
                     LeftScanRepo.ACSTopReadings.Add(reading);
+                    newLeftScans.ACSTopReadings.Add(reading);
                     sensorLogger.LogTopLeftACS(reading);
                 }
 
@@ -148,6 +153,7 @@ namespace LaserSystemLibrary
                     WriteToConsole(string.Format("BOTTOM LEFT ms: {0}, values: {1},{2},{3},{4},{5}",
                         reading.Milliseconds, reading.RedEdge, reading.NIR, reading.Red, reading.NDRE, reading.NDVI));
                     LeftScanRepo.ACSBottomReadings.Add(reading);
+                    newLeftScans.ACSBottomReadings.Add(reading);
                     sensorLogger.LogBottomLeftACS(reading);
                 }
 
@@ -156,6 +162,7 @@ namespace LaserSystemLibrary
                     WriteToConsole(string.Format("TOP RIGHT ms: {0}, values: {1},{2},{3},{4},{5}",
                         reading.Milliseconds, reading.RedEdge, reading.NIR, reading.Red, reading.NDRE, reading.NDVI));
                     RightScanRepo.ACSTopReadings.Add(reading);
+                    newRightScans.ACSTopReadings.Add(reading);
                     sensorLogger.LogTopRightACS(reading);
                 }
 
@@ -164,6 +171,7 @@ namespace LaserSystemLibrary
                     WriteToConsole(string.Format("BOTTOM RIGHT ms: {0}, values: {1},{2},{3},{4},{5}",
                         reading.Milliseconds, reading.RedEdge, reading.NIR, reading.Red, reading.NDRE, reading.NDVI));
                     RightScanRepo.ACSBottomReadings.Add(reading);
+                    newRightScans.ACSBottomReadings.Add(reading);
                     sensorLogger.LogBottomRightACS(reading);
                 }
 
@@ -182,12 +190,14 @@ namespace LaserSystemLibrary
                 if (LeftLMSReadings.TryDequeue(out scan) != false)
                 {
                     LeftScanRepo.LMSScans.Add(scan);
+                    newLeftScans.LMSScans.Add(scan);
                     sensorLogger.LogLeftLMS(scan);
                 }
 
                 if (RightLMSReadings.TryDequeue(out scan) != false)
                 {
                     RightScanRepo.LMSScans.Add(scan);
+                    newRightScans.LMSScans.Add(scan);
                     sensorLogger.LogRightLMS(scan);
                 }
             }
@@ -202,8 +212,6 @@ namespace LaserSystemLibrary
             Console.WriteLine("OMFG A TIMER!");
             Console.WriteLine("saving!");
             ACS430Reading reading;
-            ScanGroup sgL = new ScanGroup();
-            ScanGroup sgR = new ScanGroup();
             List<ScanGroup> leftScans = new List<ScanGroup>();
             List<ScanGroup> rightScans = new List<ScanGroup>();
             Console.WriteLine("Left ticks: {0}", path.LeftTicks.Count);
@@ -212,11 +220,7 @@ namespace LaserSystemLibrary
                 Console.WriteLine("{0} vs {1}", Math.Floor(path.LeftTicks[i].tick/1000), currentSecond);
                 if (Math.Floor(path.LeftTicks[i].tick / 1000) <= currentSecond)
                 {
-                    sgL.ScanLoc = path.LeftTicks[i];
-                    sgL.LMSScan = LeftScanRepo.LMSScans.Aggregate((x, y) => Math.Abs(x.calculatedMilliseconds - sgL.ScanLoc.tick) < Math.Abs(y.calculatedMilliseconds - sgL.ScanLoc.tick) ? x : y);
-                    sgL.TopReading = LeftScanRepo.ACSTopReadings.Aggregate((x, y) => Math.Abs(x.Milliseconds - sgL.ScanLoc.tick) < Math.Abs(y.Milliseconds - sgL.ScanLoc.tick) ? x : y);
-                    sgL.BottomReading = LeftScanRepo.ACSBottomReadings.Aggregate((x, y) => Math.Abs(x.Milliseconds - sgL.ScanLoc.tick) < Math.Abs(y.Milliseconds - sgL.ScanLoc.tick) ? x : y);
-                    sgL.ScanResults = LaserScanUtilities.GetScanInfo(sgL.LMSScan.buffer, true);
+                    ScanGroup sgL = GetScanGroup(LeftScanRepo, path.LeftTicks[i], true);
                     leftScans.Add(sgL);
                     path.LeftTicks.RemoveAt(i);
                     Console.WriteLine("left tick removed");
@@ -229,11 +233,9 @@ namespace LaserSystemLibrary
             {
                 if (Math.Floor(path.RightTicks[i].tick / 1000) <= currentSecond)
                 {
-                    sgR.ScanLoc = path.RightTicks[i];
-                    sgR.LMSScan = RightScanRepo.LMSScans.Aggregate((x, y) => Math.Abs(x.calculatedMilliseconds - sgR.ScanLoc.tick) < Math.Abs(y.calculatedMilliseconds - sgR.ScanLoc.tick) ? x : y);
-                    sgR.TopReading = RightScanRepo.ACSTopReadings.Aggregate((x, y) => Math.Abs(x.Milliseconds - sgR.ScanLoc.tick) < Math.Abs(y.Milliseconds - sgR.ScanLoc.tick) ? x : y);
-                    sgR.BottomReading = RightScanRepo.ACSBottomReadings.Aggregate((x, y) => Math.Abs(x.Milliseconds - sgR.ScanLoc.tick) < Math.Abs(y.Milliseconds - sgR.ScanLoc.tick) ? x : y);
-                    sgR.ScanResults = LaserScanUtilities.GetScanInfo(sgL.LMSScan.buffer, true);
+                    ScanGroup sgR = GetScanGroup(RightScanRepo, path.RightTicks[i], false);
+
+                    sgR.ScanResults = LaserScanUtilities.GetScanInfo(sgR.LMSScan.buffer, false);
                     rightScans.Add(sgR);
                     path.RightTicks.RemoveAt(i);
                     i--;
@@ -243,12 +245,46 @@ namespace LaserSystemLibrary
             
             foreach (ScanGroup sg in leftScans)
             {
-                shapefile.write(sg);
+                shapefile.write(sg, "left");
             }
             foreach (ScanGroup sg in rightScans)
             {
-                shapefile.write(sg);
+                shapefile.write(sg, "right");
             }
+        }
+
+        private ScanGroup GetScanGroup(ScanRepo ScanRepo,ScanLocation scanLocation, bool left)
+        {
+            ScanGroup SG = new ScanGroup();
+            try
+            {
+                SG.LMSScan = ScanRepo.LMSScans.Aggregate((x, y) => Math.Abs(x.calculatedMilliseconds - SG.ScanLoc.tick) < Math.Abs(y.calculatedMilliseconds - SG.ScanLoc.tick) ? x : y);
+                SG.ScanResults = LaserScanUtilities.GetScanInfo(SG.LMSScan.buffer, left);
+            
+            }
+            catch
+            {
+                SG.LMSScan = new LmsScan2();
+                SG.ScanResults = new ScanResults();
+            }
+            try
+            {
+                SG.TopReading = ScanRepo.ACSTopReadings.Aggregate((x, y) => Math.Abs(x.Milliseconds - SG.ScanLoc.tick) < Math.Abs(y.Milliseconds - SG.ScanLoc.tick) ? x : y);
+            }
+            catch
+            {
+                SG.TopReading = new ACS430Reading(0, 0, 0, 0, 0, 0);
+            }
+            try
+            {
+                SG.BottomReading = ScanRepo.ACSBottomReadings.Aggregate((x, y) => Math.Abs(x.Milliseconds - SG.ScanLoc.tick) < Math.Abs(y.Milliseconds - SG.ScanLoc.tick) ? x : y);
+            }
+            catch
+            {
+                SG.BottomReading = new ACS430Reading(0, 0, 0, 0, 0, 0);
+            }
+            SG.ScanResults = LaserScanUtilities.GetScanInfo(SG.LMSScan.buffer, left);
+            return SG;
         }
         private void WriteToConsole(string str)
         {
@@ -381,6 +417,7 @@ namespace LaserSystemLibrary
         {
             RunACS(BottomRightACSCom, BottomRightACSReadings);
         }
+
         public static pointXYZ parseGPSReading(NmeaSentence gpsReading)
         {
             try

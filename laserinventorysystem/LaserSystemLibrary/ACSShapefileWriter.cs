@@ -26,26 +26,27 @@ namespace LaserSystemLibrary
             fs.DataTable.Columns.Add("HEIGHT", typeof(double));
             fs.DataTable.Columns.Add("SKIRTHT", typeof(double));
             fs.DataTable.Columns.Add("TREDEDGE", typeof(double));
-            fs.DataTable.Columns.Add("TNIR", typeof(double));
-            fs.DataTable.Columns.Add("TRED", typeof(double));
-            fs.DataTable.Columns.Add("TNDRE", typeof(double));
-            fs.DataTable.Columns.Add("TNDVI", typeof(double));
-            fs.DataTable.Columns.Add("TIME", typeof(string));
             fs.DataTable.Columns.Add("BREDEDGE", typeof(double));
+            fs.DataTable.Columns.Add("TNIR", typeof(double));
             fs.DataTable.Columns.Add("BNIR", typeof(double));
+            fs.DataTable.Columns.Add("TRED", typeof(double));
             fs.DataTable.Columns.Add("BRED", typeof(double));
+            fs.DataTable.Columns.Add("TNDRE", typeof(double));
             fs.DataTable.Columns.Add("BNDRE", typeof(double));
+            fs.DataTable.Columns.Add("TNDVI", typeof(double));
             fs.DataTable.Columns.Add("BNDVI", typeof(double));
+            fs.DataTable.Columns.Add("TIME", typeof(string));
             fs.DataTable.Columns.Add("LATITUDE", typeof(string));
             fs.DataTable.Columns.Add("LONGITUDE", typeof(string));
             fs.DataTable.Columns.Add("ALTITUDE", typeof(double));
+            fs.DataTable.Columns.Add("Left", typeof(string));
             fs.Projection = KnownCoordinateSystems.Geographic.World.WGS1984;
             fs.Projection = utm17;
             this.path = path;
         }
 
 
-        public void write(ScanGroup scans)
+        public void write(ScanGroup scans, string left)
         {
             xy[0] = scans.ScanLoc.point.x;
             xy[1] = scans.ScanLoc.point.y;
@@ -75,6 +76,7 @@ namespace LaserSystemLibrary
             feature.DataRow["TIME"] = scans.LMSScan.timestamp.ToString();
             feature.DataRow["LATITUDE"] = xy[1];
             feature.DataRow["LONGITUDE"] = xy[0];
+            feature.DataRow["left"] = left;
             feature.DataRow.EndEdit();
         }
 

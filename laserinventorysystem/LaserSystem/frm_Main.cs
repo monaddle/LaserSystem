@@ -55,7 +55,7 @@ namespace LaserSystem
                 ScannerRepo.LeftLMS = new LMS291_3(settings.comSettings.lComName, settings.comSettings.lBaudRate, stopwatch, true);
                 Thread th6 = new Thread(RunLeftLMS);
                 th6.Name = "LeftLMS";
-                
+                th6.Priority = ThreadPriority.AboveNormal;
                 th6.Start();
             }
             catch { }
@@ -64,6 +64,7 @@ namespace LaserSystem
                 ScannerRepo.RightLMS = new LMS291_3(settings.comSettings.rComName, settings.comSettings.rBaudRate, stopwatch, false);
                 Thread th7 = new Thread(RunRightLMS);
                 th7.Name = "RightLMS";
+                th7.Priority = ThreadPriority.AboveNormal;
                 th7.Start();
             }
             catch { }
@@ -71,6 +72,7 @@ namespace LaserSystem
             {
                 ScannerRepo.GPS = new NmeaReader(settings.comSettings.gpsComName, 38400, stopwatch);
                 Thread th3 = new Thread(RunGPS);
+                th3.Priority = ThreadPriority.AboveNormal;
                 th3.Name = "gps";
                 th3.Start();
             }
@@ -81,6 +83,7 @@ namespace LaserSystem
                 ScannerRepo.TopLeftACS = new ACS430(settings.comSettings.TopLeftACSComName, 38400, stopwatch);
                 Thread th1 = new Thread(RunTopLeftACS);
                 th1.Name = "topleftacs";
+                th1.Priority = ThreadPriority.AboveNormal;
                 th1.Start();
             }
             catch { } 
@@ -96,7 +99,9 @@ namespace LaserSystem
                 ScannerRepo.BottomLeftACS = new ACS430(settings.comSettings.BottomLeftACSComName, 38400, stopwatch);
                 Thread th2 = new Thread(RunBottomLeftACS);
                 th2.Name = "bottomleftacs";
+                th2.Priority = ThreadPriority.AboveNormal;
                 th2.Start();
+
             }
             catch { }
             try
@@ -104,6 +109,7 @@ namespace LaserSystem
                 ScannerRepo.TopRightACS = new ACS430(settings.comSettings.TopRightACSComName, 38400, stopwatch);
                 Thread th4 = new Thread(RunTopRightACS);
                 th4.Name = "TopRightACS";
+                th4.Priority = ThreadPriority.AboveNormal;
                 th4.Start();
             }
             catch { }
@@ -112,6 +118,7 @@ namespace LaserSystem
                 ScannerRepo.BottomRightACS = new ACS430(settings.comSettings.BottomRightACSComName, 38400, stopwatch);
                 Thread th5 = new Thread(RunBottomRightACS);
                 th5.Name = "BottomRightACS";
+                th5.Priority = ThreadPriority.AboveNormal;
                 th5.Start();
             }
             catch { }
@@ -332,9 +339,11 @@ namespace LaserSystem
                 RightLMSReadings,
                 settings,
                 stopwatch);
+            timer.Stop();
+            stopwatch.Restart();
+            timer_Elapsed(null, null);
             try
             {
-                stopwatch.Restart();
                 BackgroundWorker worker = sender as BackgroundWorker;
                 while (worker.CancellationPending != true)
                 {
@@ -350,6 +359,7 @@ namespace LaserSystem
             }
             catch (Exception err)
             {
+                timer.Start();
                 Console.Beep(5000, 1000);
                 MessageBox.Show(err.Message);
                 MessageBox.Show(err.StackTrace);
@@ -381,6 +391,7 @@ namespace LaserSystem
         }
         private void btn_StopScanning_Click(object sender, EventArgs e)
         {
+            timer.Start();
             if (ScanRunnerWorker.IsBusy)
             {
                 ScanRunnerWorker.CancelAsync();
@@ -470,6 +481,8 @@ namespace LaserSystem
         {
             ACS430 ACS = acs;
             ACS430Reading reading = null;
+            Stopwatch sw = new Stopwatch();
+            sw.Start();
             while (true)
             {
                 if (threadstop)
