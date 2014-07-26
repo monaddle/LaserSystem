@@ -305,18 +305,6 @@ namespace LaserSystem
         {
 
             Thread.Sleep(500);
-            if ((panel_leftLaser.BackColor == Color.Red) & chkbox_leftLaser.Checked |
-               ((panel_rightLaser.BackColor == Color.Red) & chkbox_rightLaser.Checked) |
-                (panel_GPS.BackColor == Color.Red))
-            {
-                MessageBox.Show("Oops! There's a problem with one of your sensors.");
-                return;
-            }
-
-            if (llaser == null)
-                Console.WriteLine("llasernull");
-            if (rlaser == null)
-                Console.WriteLine("rlasernull");
             GetSettingsFromForm();
             DisableInterface();
             btn_StopScanning.Enabled = true;

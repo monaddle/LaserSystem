@@ -211,5 +211,40 @@ namespace LaserSystemLibrary
             }
             return offset;
         }
+
+        internal static double GetClosestPoint(LmsScan2 scan, string left)
+        {
+            double[] scans = new double[181];
+            int j = 0;
+            //Console.WriteLine();
+            ScanResults scanInfo = new ScanResults();
+            var buffer = scan.buffer;
+            for (int i = 8; i < 181 * 2 + 8; i += 2)
+            {
+                byte[] arry = { buffer[i + 1], buffer[i] };
+                int myScanValue;
+                myScanValue = BitConverter.ToInt16(arry, 0);
+                scans[j] = myScanValue / 1000.0 * METER_TO_FEET;
+                //Console.Write("{1}, {0},\n ", myScanValue / 1000.0 * METER_TO_FEET, -90 +  (i-8)/2);
+                j++;
+            }
+            //Console.WriteLine();
+            if (left != "left")
+            {
+                Array.Reverse(scans);
+            }
+            List<double> distances = new List<double>();
+            for (int i = 21; i < scans.Length - 20; i++)
+            {
+                if (distance(scans[i], 90 - i) < max_distance && height(scans[i], 90 - i) > min_height & scans[i] < max_scan_length & height(scans[i], 90 - i) < max_height)
+                {
+                    distances.Add(max_distance - distance(scans[i], 90 - i));
+                }
+            }
+            distances.Sort();
+            int len = distances.Count < 3 ? distances.Count : 3;
+            
+            return len == 0 ? 0 : distances.GetRange(0, len).Average();
+        }
     }
 }

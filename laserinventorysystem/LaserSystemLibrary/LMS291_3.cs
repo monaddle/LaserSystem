@@ -104,8 +104,6 @@ namespace LaserSystemLibrary
                             numberOfScansThisSecond = 1;
                             currentSecond = stopWatch.Elapsed.Seconds;
                             numberOfSeconds++;
-                            //Console.WriteLine("Second {0} scan average: {1}", currentSecond, Convert.ToDouble(numberOfScansFound) / numberOfSeconds);
-                            //Console.WriteLine("Expected scans: {0}, delta: {1}", numberOfSeconds * 75, numberOfScansFound - numberOfSeconds * 75);
                         }
 
                         ushort givenCheckSum = (ushort)(Buffer[Need - 2] | (Buffer[Need - 1] << 8));

@@ -221,6 +221,7 @@ namespace LaserSystemLibrary
                 if (Math.Floor(path.LeftTicks[i].tick / 1000) <= currentSecond)
                 {
                     ScanGroup sgL = GetScanGroup(LeftScanRepo, path.LeftTicks[i], true);
+                    sgL.ScanLoc = path.LeftTicks[i];
                     leftScans.Add(sgL);
                     path.LeftTicks.RemoveAt(i);
                     Console.WriteLine("left tick removed");
@@ -231,11 +232,11 @@ namespace LaserSystemLibrary
             Console.WriteLine("right ticks: {0}", path.RightTicks.Count);
             for (int i = 0; i < path.RightTicks.Count; i++)
             {
+                Console.WriteLine("TICK TIME : {0} ", path.RightTicks[i].tick);
                 if (Math.Floor(path.RightTicks[i].tick / 1000) <= currentSecond)
                 {
                     ScanGroup sgR = GetScanGroup(RightScanRepo, path.RightTicks[i], false);
-
-                    sgR.ScanResults = LaserScanUtilities.GetScanInfo(sgR.LMSScan.buffer, false);
+                    sgR.ScanLoc = path.RightTicks[i];
                     rightScans.Add(sgR);
                     path.RightTicks.RemoveAt(i);
                     i--;
@@ -256,6 +257,7 @@ namespace LaserSystemLibrary
         private ScanGroup GetScanGroup(ScanRepo ScanRepo,ScanLocation scanLocation, bool left)
         {
             ScanGroup SG = new ScanGroup();
+            SG.ScanLoc = scanLocation;
             try
             {
                 SG.LMSScan = ScanRepo.LMSScans.Aggregate((x, y) => Math.Abs(x.calculatedMilliseconds - SG.ScanLoc.tick) < Math.Abs(y.calculatedMilliseconds - SG.ScanLoc.tick) ? x : y);
@@ -283,7 +285,6 @@ namespace LaserSystemLibrary
             {
                 SG.BottomReading = new ACS430Reading(0, 0, 0, 0, 0, 0);
             }
-            SG.ScanResults = LaserScanUtilities.GetScanInfo(SG.LMSScan.buffer, left);
             return SG;
         }
         private void WriteToConsole(string str)
