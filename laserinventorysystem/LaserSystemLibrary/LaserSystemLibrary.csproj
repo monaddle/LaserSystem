@@ -62,6 +62,7 @@
     <Compile Include="GPSPath.cs" />
     <Compile Include="GPSVector.cs" />
     <Compile Include="LMS291_3.cs" />
+    <Compile Include="LocationService.cs" />
     <Compile Include="Path2.cs" />
     <Compile Include="GeoreferencedScan.cs" />
     <Compile Include="GeoUTMConverter.cs" />

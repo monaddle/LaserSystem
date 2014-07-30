@@ -7,6 +7,7 @@ using System.Runtime.Serialization.Formatters.Binary;
 using System.Runtime.Serialization;
 using System.IO;
 using System.Collections.Generic;
+using DotSpatial.Data;
 namespace LaserSystemLibrary
 {
     public class Path2
@@ -40,15 +41,16 @@ namespace LaserSystemLibrary
         int filesWritten = 0;
         double FEET_TO_METERS = 0.3048;
         ShapefileWriter points;
+        LocationService LocationServiceObject;
+        bool UsePolygonLayerForConstraint;
         public Path2(ScanningOptions options, bool fakeReadings, bool saveReadings, string tag)
         {
+            this.UsePolygonLayerForConstraint = options.UsePolygonLayer;
             this.date = tag;
-
+            LocationServiceObject = new LocationService("polygons.shp");
             FakeReadings = fakeReadings;
             this.SamplingDistance = options.samplingDistance * FEET_TO_METERS;
             scanningOptions = options;
-            //gw = new ShapefileWriter(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + date + options.OutputFileName + ".shp");
-            //points = new ShapefileWriter(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + date + options.OutputFileName + "points.shp");
             LaserScanUtilities.FakeScans = fakeReadings;
             LaserScanUtilities.calculateLowestAngle(options.rowDistance, options.laserHeight);
             SaveReadings = saveReadings;
@@ -146,9 +148,20 @@ namespace LaserSystemLibrary
             }
             for (int i = 1; i <= NumberOfTicks; i++)
             {
+
                 //Console.WriteLine("Point2 tick value: {0}", pointXYZ2.t);
                 tick = lineSegment.GetTickAtDistance(i * SamplingDistance - offset);
-                
+                if (UsePolygonLayerForConstraint)
+                {
+                    DotSpatial.Topology.Point p = new DotSpatial.Topology.Point(tick.point.x, tick.point.y);
+                    Feature point = new Feature(p);
+                    Feature f = LocationServiceObject.GetLocation(point);
+                    if (f == null)
+                    {
+                        continue;
+                    }
+                }
+
                 //Console.WriteLine("Tick x: {0}, y: {1}", tick.point.x, tick.point.y);
                 //Console.WriteLine("calculated tick value: {0}", tick.tick);
                 if (tick.tick < pointXYZ1.t | tick.tick > pointXYZ2.t)

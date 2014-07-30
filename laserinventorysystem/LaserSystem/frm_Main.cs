@@ -416,6 +416,7 @@ namespace LaserSystem
             settings.useLeftLaser = chkbox_leftLaser.Checked;
             settings.useRightLaser = chkbox_rightLaser.Checked;
             settings.minHeight = Convert.ToDouble(txtBox_MinHeight.Text);
+            settings.UsePolygonLayer = usePolygonConstraintToolStripMenuItem.Checked;
         }
 
         private void DisableInterface()
@@ -595,6 +596,11 @@ namespace LaserSystem
         private void frm_main_FormClosing(object sender, FormClosingEventArgs e)
         {
             threadstop = true;
+        }
+
+        private void usePolygonConstraintToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            usePolygonConstraintToolStripMenuItem.Checked = !usePolygonConstraintToolStripMenuItem.Checked;
         }
 
 

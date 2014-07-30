@@ -71,6 +71,7 @@
             this.btn_StartScanning = new System.Windows.Forms.Button();
             this.btn_StopScanning = new System.Windows.Forms.Button();
             this.ScanRunnerWorker = new System.ComponentModel.BackgroundWorker();
+            this.usePolygonConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
@@ -452,7 +453,8 @@
             // 
             this.settingsToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.setCOMPortsToolStripMenuItem,
-            this.saveDataToolStripMenuItem});
+            this.saveDataToolStripMenuItem,
+            this.usePolygonConstraintToolStripMenuItem});
             this.settingsToolStripMenuItem.Name = "settingsToolStripMenuItem";
             this.settingsToolStripMenuItem.Size = new System.Drawing.Size(91, 29);
             this.settingsToolStripMenuItem.Text = "Settings";
@@ -460,7 +462,7 @@
             // setCOMPortsToolStripMenuItem
             // 
             this.setCOMPortsToolStripMenuItem.Name = "setCOMPortsToolStripMenuItem";
-            this.setCOMPortsToolStripMenuItem.Size = new System.Drawing.Size(206, 30);
+            this.setCOMPortsToolStripMenuItem.Size = new System.Drawing.Size(281, 30);
             this.setCOMPortsToolStripMenuItem.Text = "Set COM Ports";
             this.setCOMPortsToolStripMenuItem.Click += new System.EventHandler(this.setCOMPortsToolStripMenuItem_Click);
             // 
@@ -468,7 +470,7 @@
             // 
             this.saveDataToolStripMenuItem.CheckOnClick = true;
             this.saveDataToolStripMenuItem.Name = "saveDataToolStripMenuItem";
-            this.saveDataToolStripMenuItem.Size = new System.Drawing.Size(206, 30);
+            this.saveDataToolStripMenuItem.Size = new System.Drawing.Size(281, 30);
             this.saveDataToolStripMenuItem.Text = "Save Data";
             // 
             // btn_StartScanning
@@ -499,6 +501,13 @@
             this.ScanRunnerWorker.WorkerSupportsCancellation = true;
             this.ScanRunnerWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ScanRunnerWorker_DoWork);
             this.ScanRunnerWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ScanRunnerWorker_RunWorkerCompleted);
+            // 
+            // usePolygonConstraintToolStripMenuItem
+            // 
+            this.usePolygonConstraintToolStripMenuItem.Name = "usePolygonConstraintToolStripMenuItem";
+            this.usePolygonConstraintToolStripMenuItem.Size = new System.Drawing.Size(281, 30);
+            this.usePolygonConstraintToolStripMenuItem.Text = "Use Polygon Constraint";
+            this.usePolygonConstraintToolStripMenuItem.Click += new System.EventHandler(this.usePolygonConstraintToolStripMenuItem_Click);
             // 
             // frm_main
             // 
@@ -571,6 +580,7 @@
         private System.Windows.Forms.Label label11;
         private System.Windows.Forms.Label lbl_BottomLeftACS;
         private System.Windows.Forms.Label lbl_TopLeftACS;
+        private System.Windows.Forms.ToolStripMenuItem usePolygonConstraintToolStripMenuItem;
     }
 }
 

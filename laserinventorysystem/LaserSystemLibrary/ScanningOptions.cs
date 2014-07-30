@@ -48,6 +48,7 @@ namespace LaserSystemLibrary
         public string outputTableName;
         public bool fakeReadings;
         public bool saveData;
+        public bool UsePolygonLayer;
         public void LoadSettings()
         {
             // try to open file
@@ -66,6 +67,7 @@ namespace LaserSystemLibrary
                 useLeftLaser = true;
                 useRightLaser = true;
                 fakeReadings = false;
+                UsePolygonLayer = true;
                 comSettings = new ComSettings();
             }
         }
@@ -92,6 +94,7 @@ namespace LaserSystemLibrary
             useLeftLaser = true;
             useRightLaser = true;
             comSettings = tempSettings.comSettings;
+            UsePolygonLayer = tempSettings.UsePolygonLayer;
             stream.Close();
         }
 
