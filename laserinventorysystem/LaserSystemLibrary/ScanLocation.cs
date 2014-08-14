@@ -10,6 +10,6 @@ namespace LaserSystemLibrary
         public double tick;
         public pointXYZ point;
         public double xySlope;
-        
+        public string HarBlkID;
     }
 }

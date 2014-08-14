@@ -103,15 +103,11 @@ namespace LaserSystemLibrary
 
         private void AddNewTicks(pointXYZ pointXYZ1, pointXYZ pointXYZ2)
         {
-            //Console.WriteLine("adding a new tick!");
-            //ScanLocation lastTick = ticks[ticks.Count - 1];
             ScanLocation tick;
             LineSegment lineSegment = new LineSegment(pointXYZ1, pointXYZ2);
             double length = lineSegment.getLength();
             double NumberOfTicks = Math.Floor(((TotalDistance + length) - totalNumberOfTicks * SamplingDistance) / SamplingDistance);
 
-            //Console.WriteLine("length: {0}", length);
-            //Console.WriteLine("adding {0} ticks!", NumberOfTicks);
             if (totalNumberOfTicks == 0)
             {
                 tick = lineSegment.GetTickAtDistance(0);
@@ -148,21 +144,25 @@ namespace LaserSystemLibrary
             }
             for (int i = 1; i <= NumberOfTicks; i++)
             {
+                string HarBlkId;
                 totalNumberOfTicks++;
-
+                Feature feature;
                 //Console.WriteLine("Point2 tick value: {0}", pointXYZ2.t);
                 tick = lineSegment.GetTickAtDistance(i * SamplingDistance - offset);
                 if (UsePolygonLayerForConstraint)
                 {
                     DotSpatial.Topology.Point p = new DotSpatial.Topology.Point(tick.point.x, tick.point.y);
                     Feature point = new Feature(p);
-                    Feature f = LocationServiceObject.GetLocation(point, tick.point.x, tick.point.y);
-                    if (f == null)
+                    feature = LocationServiceObject.GetLocation(point, tick.point.x, tick.point.y);
+                    HarBlkId = Convert.ToString(feature.DataRow["HARBLKID"]);
+                    if (feature == null)
                     {
                         continue;
                     }
                 }
-
+                else
+                    HarBlkId = "";
+                
                 //Console.WriteLine("Tick x: {0}, y: {1}", tick.point.x, tick.point.y);
                 //Console.WriteLine("calculated tick value: {0}", tick.tick);
                 if (tick.tick < pointXYZ1.t | tick.tick > pointXYZ2.t)
@@ -170,6 +170,7 @@ namespace LaserSystemLibrary
                     throw new Exception();
                 }
                 ScanLocation leftloc = new ScanLocation();
+                leftloc.HarBlkID = HarBlkId;
                 LaserScanUtilities.TickOffset tickOffset = LaserScanUtilities.CalculateTickOffset(tick.xySlope, scanningOptions.rowDistance * FEET_TO_METERS, pointXYZ1, pointXYZ2);
 
                 leftloc.tick = tick.tick;
@@ -189,6 +190,7 @@ namespace LaserSystemLibrary
                 tempPoint.y = tick.point.y - tickOffset.Y;
                 tempPoint.z = tick.point.z;
                 ScanLocation rightloc = new ScanLocation();
+                rightloc.HarBlkID = HarBlkId;
                 rightloc.tick = tick.tick;
                 rightloc.point = tempPoint;
                 RightTickQueue.Enqueue(rightloc);

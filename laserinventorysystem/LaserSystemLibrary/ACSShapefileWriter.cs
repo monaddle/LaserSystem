@@ -41,6 +41,7 @@ namespace LaserSystemLibrary
             fs.DataTable.Columns.Add("ALTITUDE", typeof(double));
             fs.DataTable.Columns.Add("Left", typeof(string));
             fs.DataTable.Columns.Add("DISTANCE", typeof(double));
+            fs.DataTable.Columns.Add("HARBLKID", typeof(string));
             fs.Projection = KnownCoordinateSystems.Geographic.World.WGS1984;
             fs.Projection = utm17;
             this.path = path;
@@ -53,7 +54,6 @@ namespace LaserSystemLibrary
             xy[0] = scans.ScanLoc.point.x;
             xy[1] = scans.ScanLoc.point.y;
             Point point = new Point(xy[0], xy[1]);
-
             zproj[0] = scans.ScanLoc.point.z;
             Reproject.ReprojectPoints(xy, zproj, utm17, wgs84, 0, 1);
             IFeature feature = fs.AddFeature(point);
@@ -81,6 +81,7 @@ namespace LaserSystemLibrary
             feature.DataRow["left"] = left;
             feature.DataRow["ALTITUDE"] = scans.ScanLoc.point.z;
             feature.DataRow["DISTANCE"] = ClosestPoint;
+            feature.DataRow["HARBLKID"] = scans.ScanLoc.HarBlkID;
             feature.DataRow.EndEdit();
         }
 
