@@ -47,7 +47,7 @@ namespace LaserSystemLibrary
         {
             this.UsePolygonLayerForConstraint = options.UsePolygonLayer;
             this.date = tag;
-            LocationServiceObject = new LocationService("polygons.shp");
+            LocationServiceObject = new LocationService("SOURCEPOLYGON.shp");
             FakeReadings = fakeReadings;
             this.SamplingDistance = options.samplingDistance * FEET_TO_METERS;
             scanningOptions = options;
@@ -148,6 +148,7 @@ namespace LaserSystemLibrary
             }
             for (int i = 1; i <= NumberOfTicks; i++)
             {
+                totalNumberOfTicks++;
 
                 //Console.WriteLine("Point2 tick value: {0}", pointXYZ2.t);
                 tick = lineSegment.GetTickAtDistance(i * SamplingDistance - offset);
@@ -155,7 +156,7 @@ namespace LaserSystemLibrary
                 {
                     DotSpatial.Topology.Point p = new DotSpatial.Topology.Point(tick.point.x, tick.point.y);
                     Feature point = new Feature(p);
-                    Feature f = LocationServiceObject.GetLocation(point);
+                    Feature f = LocationServiceObject.GetLocation(point, tick.point.x, tick.point.y);
                     if (f == null)
                     {
                         continue;
@@ -193,7 +194,6 @@ namespace LaserSystemLibrary
                 RightTickQueue.Enqueue(rightloc);
                 if(RightActive)
                     RightTicks.Add(rightloc);
-                totalNumberOfTicks++;
             }
             TotalDistance += length;
             offset = TotalDistance % SamplingDistance;

@@ -97,6 +97,10 @@ namespace LaserSystemLibrary
             ScanLocation a = new ScanLocation();
             double length = getLength();
             double pctDistance = distance / length;
+            if (pctDistance == Double.NaN)
+            {
+                
+            }
             double tick = ((p2.t - p1.t) * pctDistance) + p1.t;
             
             a.tick = tick;
