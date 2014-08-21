@@ -154,11 +154,12 @@ namespace LaserSystemLibrary
                     DotSpatial.Topology.Point p = new DotSpatial.Topology.Point(tick.point.x, tick.point.y);
                     Feature point = new Feature(p);
                     feature = LocationServiceObject.GetLocation(point, tick.point.x, tick.point.y);
-                    HarBlkId = Convert.ToString(feature.DataRow["HARBLKID"]);
                     if (feature == null)
                     {
                         continue;
                     }
+                    HarBlkId = Convert.ToString(feature.DataRow["HARBLKID"]);
+
                 }
                 else
                     HarBlkId = "";
