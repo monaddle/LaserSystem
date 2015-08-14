@@ -12,6 +12,5 @@ namespace LaserSystemLibrary
         public DateTime timestamp;
         public String buffer;
         public double milliseconds;
-
     }
 }

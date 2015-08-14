@@ -12,8 +12,8 @@ namespace LaserSystemLibrary
         public static ACS430 BottomLeftACS;
         public static ACS430 TopRightACS;
         public static ACS430 BottomRightACS;
-        public static LMS291_3 LeftLMS;
-        public static LMS291_3 RightLMS;
+        public static LMS291 LeftLMS;
+        public static LMS291 RightLMS;
         public static NmeaReader GPS;
 
         public static List<SerialPort> serialPorts;

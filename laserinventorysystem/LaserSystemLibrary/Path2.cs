@@ -45,6 +45,7 @@ namespace LaserSystemLibrary
         bool UsePolygonLayerForConstraint;
         public Path2(ScanningOptions options, bool fakeReadings, bool saveReadings, string tag)
         {
+
             this.UsePolygonLayerForConstraint = options.UsePolygonLayer;
             this.date = tag;
             LocationServiceObject = new LocationService("SOURCEPOLYGON.shp");
@@ -147,7 +148,6 @@ namespace LaserSystemLibrary
                 string HarBlkId;
                 totalNumberOfTicks++;
                 Feature feature;
-                //Console.WriteLine("Point2 tick value: {0}", pointXYZ2.t);
                 tick = lineSegment.GetTickAtDistance(i * SamplingDistance - offset);
                 if (UsePolygonLayerForConstraint)
                 {
@@ -258,13 +258,6 @@ namespace LaserSystemLibrary
             return duplicates[0];
         }
 
-        //public void ProcessScans()
-        //{
-        //    List<GeoreferencedScan> rightGeoreferencedScans = MatchTicksWithScans(RightTicks, lmsRightScans, false);
-        //    List<GeoreferencedScan> leftGeoreferencedScans = MatchTicksWithScans(LeftTicks, lmsLeftScans, true);
-        //    gw.writeBatch(rightGeoreferencedScans);
-        //    gw.writeBatch(leftGeoreferencedScans);
-        //}
 
         public void Close()
         {
@@ -301,7 +294,6 @@ namespace LaserSystemLibrary
                 addPoint(point);
             }
         }
-
         public int ProcessSavedScans()
         {
             if (lmsRightScans.Count >= 75 & lmsLeftScans.Count >= 75)
@@ -332,7 +324,7 @@ namespace LaserSystemLibrary
         {
             foreach (KeyValuePair<int, List<LmsScan2>> item in scanDict)
             {
-                Console.WriteLine("{0}:{1}, ", item.Key, item.Value.Count);
+                //Console.WriteLine("{0}:{1}, ", item.Key, item.Value.Count);
             }
             int second;
             double interval;
@@ -351,8 +343,7 @@ namespace LaserSystemLibrary
             }
             foreach (ScanLocation tick in Ticks)
             {
-                
-                second = (int)(tick.point. t/ (double)Stopwatch.Frequency);
+                second = (int)(tick.point.t/ (double)Stopwatch.Frequency);
                 if(scanDict.ContainsKey(second))
                     currentList = scanDict[second];
                 else break;

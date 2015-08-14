@@ -48,6 +48,7 @@ namespace LaserSystemLibrary
         public string outputTableName;
         public bool fakeReadings;
         public bool saveData;
+        public double laserOffset;
         public bool UsePolygonLayer;
         public void LoadSettings()
         {

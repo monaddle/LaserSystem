@@ -47,7 +47,7 @@ namespace testcropsensors
             timer1.Elapsed += timer_Elapsed;
             foreach(string s in SerialPort.GetPortNames())
             {
-                Console.Write("{0}, ", s);
+                //Console.Write("{0}, ", s);
             }
             ScanningOptions options = new ScanningOptions();
             options.LoadSettings();
@@ -218,8 +218,6 @@ namespace testcropsensors
             {
                 shapefile.write(sg);
             }
-
-
         }
         private void WriteToConsole(string str)
         {
@@ -290,7 +288,7 @@ namespace testcropsensors
         }
         public void RunLeftLMS()
         {
-            LMS291_3 lms = new LMS291_3(LeftLMSCom, 500000, sw, true);
+            LMS291 lms = new LMS291(LeftLMSCom, 500000, sw, true);
             LmsScan2 scan;
             lms.StartContinuousScan();
             Thread.Sleep(1);
@@ -312,7 +310,7 @@ namespace testcropsensors
 
         public void RunRightLMS()
         {
-            LMS291_3 lms = new LMS291_3(RightLMSCom, 500000, sw, false);
+            LMS291 lms = new LMS291(RightLMSCom, 500000, sw, false);
             LmsScan2 scan;
             lms.StartContinuousScan();
             Thread.Sleep(1);

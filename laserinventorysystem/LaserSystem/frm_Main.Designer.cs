@@ -37,7 +37,6 @@
             this.lbl_PointDistance = new System.Windows.Forms.Label();
             this.panel1 = new System.Windows.Forms.Panel();
             this.label8 = new System.Windows.Forms.Label();
-            this.txtBox_MinHeight = new System.Windows.Forms.TextBox();
             this.lbl_MinHeight = new System.Windows.Forms.Label();
             this.txtBox_OutputFilePath = new System.Windows.Forms.TextBox();
             this.btn_saveSettings = new System.Windows.Forms.Button();
@@ -68,10 +67,11 @@
             this.settingsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.setCOMPortsToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveDataToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.usePolygonConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.btn_StartScanning = new System.Windows.Forms.Button();
             this.btn_StopScanning = new System.Windows.Forms.Button();
             this.ScanRunnerWorker = new System.ComponentModel.BackgroundWorker();
-            this.usePolygonConstraintToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.txt_laserOffset = new System.Windows.Forms.TextBox();
             this.panel1.SuspendLayout();
             this.panel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.errorProvider1)).BeginInit();
@@ -144,8 +144,8 @@
             // panel1
             // 
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.panel1.Controls.Add(this.txt_laserOffset);
             this.panel1.Controls.Add(this.label8);
-            this.panel1.Controls.Add(this.txtBox_MinHeight);
             this.panel1.Controls.Add(this.lbl_MinHeight);
             this.panel1.Controls.Add(this.txtBox_OutputFilePath);
             this.panel1.Controls.Add(this.btn_saveSettings);
@@ -171,23 +171,15 @@
             this.label8.TabIndex = 14;
             this.label8.Text = "File Tag";
             // 
-            // txtBox_MinHeight
-            // 
-            this.txtBox_MinHeight.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
-            this.txtBox_MinHeight.Location = new System.Drawing.Point(441, 96);
-            this.txtBox_MinHeight.Name = "txtBox_MinHeight";
-            this.txtBox_MinHeight.Size = new System.Drawing.Size(90, 29);
-            this.txtBox_MinHeight.TabIndex = 13;
-            // 
             // lbl_MinHeight
             // 
             this.lbl_MinHeight.AutoSize = true;
             this.lbl_MinHeight.Font = new System.Drawing.Font("Microsoft Sans Serif", 14F);
             this.lbl_MinHeight.Location = new System.Drawing.Point(293, 99);
             this.lbl_MinHeight.Name = "lbl_MinHeight";
-            this.lbl_MinHeight.Size = new System.Drawing.Size(131, 24);
+            this.lbl_MinHeight.Size = new System.Drawing.Size(133, 24);
             this.lbl_MinHeight.TabIndex = 12;
-            this.lbl_MinHeight.Text = "Min. Height (ft)";
+            this.lbl_MinHeight.Text = "Laser Offset (ft)";
             // 
             // txtBox_OutputFilePath
             // 
@@ -473,6 +465,13 @@
             this.saveDataToolStripMenuItem.Size = new System.Drawing.Size(281, 30);
             this.saveDataToolStripMenuItem.Text = "Save Data";
             // 
+            // usePolygonConstraintToolStripMenuItem
+            // 
+            this.usePolygonConstraintToolStripMenuItem.Name = "usePolygonConstraintToolStripMenuItem";
+            this.usePolygonConstraintToolStripMenuItem.Size = new System.Drawing.Size(281, 30);
+            this.usePolygonConstraintToolStripMenuItem.Text = "Use Polygon Constraint";
+            this.usePolygonConstraintToolStripMenuItem.Click += new System.EventHandler(this.usePolygonConstraintToolStripMenuItem_Click);
+            // 
             // btn_StartScanning
             // 
             this.btn_StartScanning.Font = new System.Drawing.Font("Microsoft Sans Serif", 24F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
@@ -502,12 +501,13 @@
             this.ScanRunnerWorker.DoWork += new System.ComponentModel.DoWorkEventHandler(this.ScanRunnerWorker_DoWork);
             this.ScanRunnerWorker.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.ScanRunnerWorker_RunWorkerCompleted);
             // 
-            // usePolygonConstraintToolStripMenuItem
+            // txt_laserOffset
             // 
-            this.usePolygonConstraintToolStripMenuItem.Name = "usePolygonConstraintToolStripMenuItem";
-            this.usePolygonConstraintToolStripMenuItem.Size = new System.Drawing.Size(281, 30);
-            this.usePolygonConstraintToolStripMenuItem.Text = "Use Polygon Constraint";
-            this.usePolygonConstraintToolStripMenuItem.Click += new System.EventHandler(this.usePolygonConstraintToolStripMenuItem_Click);
+            this.txt_laserOffset.Font = new System.Drawing.Font("Microsoft Sans Serif", 14.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.txt_laserOffset.Location = new System.Drawing.Point(441, 99);
+            this.txt_laserOffset.Name = "txt_laserOffset";
+            this.txt_laserOffset.Size = new System.Drawing.Size(90, 29);
+            this.txt_laserOffset.TabIndex = 15;
             // 
             // frm_main
             // 
@@ -523,7 +523,6 @@
             this.Name = "frm_main";
             this.Text = "Folear Inventory System";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.frm_main_FormClosing);
-            this.Load += new System.EventHandler(this.frm_main_Load);
             this.panel1.ResumeLayout(false);
             this.panel1.PerformLayout();
             this.panel2.ResumeLayout(false);
@@ -569,7 +568,6 @@
         private System.Windows.Forms.Button btn_StartScanning;
         private System.ComponentModel.BackgroundWorker ScanRunnerWorker;
         private System.Windows.Forms.ToolStripMenuItem saveDataToolStripMenuItem;
-        private System.Windows.Forms.TextBox txtBox_MinHeight;
         private System.Windows.Forms.Label lbl_MinHeight;
         private System.Windows.Forms.Label label8;
         private System.Windows.Forms.Panel panel_topLeftACS;
@@ -581,6 +579,7 @@
         private System.Windows.Forms.Label lbl_BottomLeftACS;
         private System.Windows.Forms.Label lbl_TopLeftACS;
         private System.Windows.Forms.ToolStripMenuItem usePolygonConstraintToolStripMenuItem;
+        private System.Windows.Forms.TextBox txt_laserOffset;
     }
 }
 

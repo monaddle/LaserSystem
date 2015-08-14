@@ -9,7 +9,7 @@ using System.Diagnostics;
 
 namespace LaserSystemLibrary
 {
-    public class LMS291_3
+    public class LMS291
     {
         public SerialPort port = new SerialPort();
         public ConcurrentQueue<LmsScan2> scans;
@@ -38,7 +38,7 @@ namespace LaserSystemLibrary
         public int numberOfScansThisSecond = 0;
         double startingTick = -1;
 
-        public LMS291_3(string portName, int baudRate, Stopwatch stopwatch, bool LeftScan)
+        public LMS291(string portName, int baudRate, Stopwatch stopwatch, bool LeftScan)
         {
             scans = new ConcurrentQueue<LmsScan2>();
             port.PortName = portName;
@@ -114,6 +114,8 @@ namespace LaserSystemLibrary
                         scan.scanResults = LaserScanUtilities.GetScanInfo(Buffer, leftScan);
                         //Console.WriteLine("starting tick: {0} ", startingTick);
                         scan.milliseconds = startingTick + numberOfScansFound * (10.0 + 10.0 / 3.0);
+                        //Console.WriteLine(scan.milliseconds);
+                        //Console.WriteLine(stopWatch.ElapsedTicks);
                         scan.calculatedMilliseconds = Convert.ToDouble(stopWatch.ElapsedTicks) / Stopwatch.Frequency * 1000;
                         scan.second = (int)(scan.calculatedMilliseconds / 1000.0);
                         scan.timestamp = DateTime.Now;

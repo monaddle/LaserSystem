@@ -21,10 +21,6 @@ namespace LaserSystem
             cb_GPSCom.DataSource = SerialPort.GetPortNames();
             cb_LeftLaserCom.DataSource = SerialPort.GetPortNames();
             cb_RightLaserCom.DataSource = SerialPort.GetPortNames();
-            cb_TopLeftACSCom.DataSource = SerialPort.GetPortNames();
-            cb_BottomLeftACSCom.DataSource = SerialPort.GetPortNames();
-            cb_TopRightACSCom.DataSource = SerialPort.GetPortNames();
-            cb_BottomRightACSCom.DataSource = SerialPort.GetPortNames();
             if (SerialPort.GetPortNames().Length == 0)
             {
                 MessageBox.Show("The system is showing that there aren't any COM ports available. Do you have the USB cable attached?");
@@ -47,10 +43,6 @@ namespace LaserSystem
             cb_GPSCom.SelectedItem = settings.comSettings.gpsComName;
             cb_LeftLaserCom.SelectedItem = settings.comSettings.lComName;
             cb_RightLaserCom.SelectedItem = settings.comSettings.rComName;
-            cb_TopLeftACSCom.SelectedItem = settings.comSettings.TopLeftACSComName;
-            cb_BottomLeftACSCom.SelectedItem = settings.comSettings.BottomLeftACSComName;
-            cb_TopRightACSCom.SelectedItem = settings.comSettings.TopRightACSComName;
-            cb_BottomRightACSCom.SelectedItem = settings.comSettings.BottomRightACSComName;
 
         }
 
@@ -62,10 +54,6 @@ namespace LaserSystem
             settings.comSettings.gpsComName = cb_GPSCom.Text;
             settings.comSettings.lComName = cb_LeftLaserCom.Text;
             settings.comSettings.rComName = cb_RightLaserCom.Text;
-            settings.comSettings.TopLeftACSComName = cb_TopLeftACSCom.Text;
-            settings.comSettings.BottomLeftACSComName = cb_BottomLeftACSCom.Text;
-            settings.comSettings.TopRightACSComName = cb_TopRightACSCom.Text;
-            settings.comSettings.BottomRightACSComName = cb_BottomRightACSCom.Text;
             
             settings.SaveSettings();
             this.Close();

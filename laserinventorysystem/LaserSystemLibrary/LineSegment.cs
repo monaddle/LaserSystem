@@ -19,7 +19,6 @@ namespace LaserSystemLibrary
 
         public LineSegment(pointXYZ P1, pointXYZ P2)
         {
-            // TODO: Complete member initialization
             this.p1 = P1;
             this.p2 = P2;
             m1 = calculateM(p2.x, p1.x, p2.t, p1.t);
@@ -97,10 +96,7 @@ namespace LaserSystemLibrary
             ScanLocation a = new ScanLocation();
             double length = getLength();
             double pctDistance = distance / length;
-            if (pctDistance == Double.NaN)
-            {
-                
-            }
+
             double tick = ((p2.t - p1.t) * pctDistance) + p1.t;
             
             a.tick = tick;
@@ -110,6 +106,18 @@ namespace LaserSystemLibrary
             a.xySlope = (p2.y - p1.y) / (p2.x - p1.x);
             return a;
 
+        }
+
+        public ScanLocation GetTickAtTime(double time)
+        {
+            ScanLocation a = new ScanLocation();
+            a.point = GetPointFromTValue(time);
+            a.tick = time;
+            double pctTime = (time - p1.t) / (p2.t - p1.t);
+            a.point.latitude = p1.latitude + (p2.latitude - p1.latitude) * pctTime;
+            a.point.longitude = p1.longitude + (p2.longitude - p1.longitude) * pctTime;
+            a.xySlope = (p2.y - p1.y) / (p2.x - p1.x);
+            return a;
         }
     }
 }

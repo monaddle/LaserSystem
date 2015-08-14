@@ -59,7 +59,6 @@ namespace LaserSystemLibrary
                 int myScanValue;
                 myScanValue = BitConverter.ToInt16(arry, 0);
                 scans[j] = myScanValue / 1000.0 * METER_TO_FEET;
-                //Console.Write("{1}, {0},\n ", myScanValue / 1000.0 * METER_TO_FEET, -90 +  (i-8)/2);
                 j++;
             }
             //Console.WriteLine();
@@ -69,6 +68,10 @@ namespace LaserSystemLibrary
                 Array.Reverse(scans);
 
             }
+            scanInfo.distances = scans;
+            
+            //Console.WriteLine(String.Join(", ", scanInfo.distances));
+
             int skirtIndex = -1;
             int treeEndIndex = -1;
             double density;

@@ -12,5 +12,6 @@ namespace LaserSystemLibrary
         public double Density;
         public double TreeHeight;
         public double SkirtHeight;
+        public double[] distances;
     }
 }

@@ -36,11 +36,10 @@ namespace LaserSystemLibrary
         static Stopwatch sw = new Stopwatch();
         bool threadstop = false;
         bool DebugToConsole = false;
-        SensorLogger sensorLogger;
+        public SensorLogger sensorLogger;
         Path2 path;
         System.Timers.Timer timer1 = new System.Timers.Timer(1500);
         ScanningOptions Options;
-
         int currentSecond = 0;
 
         public TwoCropCircles(
@@ -67,7 +66,7 @@ namespace LaserSystemLibrary
             LaserScanUtilities.max_distance = Options.rowDistance;
             LaserScanUtilities.laserHeight = Options.laserHeight;
             sw = stopWatch;
-
+            
             path = new Path2(Options, false, false, "none");
             string date = DateTime.Now.ToString("MM-dd-yy H.mm.ss");
             Directory.CreateDirectory(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + date);
@@ -77,7 +76,7 @@ namespace LaserSystemLibrary
             timer1.Elapsed += timer_Elapsed;
             foreach (string s in SerialPort.GetPortNames())
             {
-                Console.Write("{0}, ", s);
+                //Console.Write("{0}, ", s);
             }
 
         }
@@ -192,6 +191,7 @@ namespace LaserSystemLibrary
                     LeftScanRepo.LMSScans.Add(scan);
                     newLeftScans.LMSScans.Add(scan);
                     sensorLogger.LogLeftLMS(scan);
+                    //LeftLaserFile.WriteLine(String.Join(", ", scan.scanResults.distances));
                 }
 
                 if (RightLMSReadings.TryDequeue(out scan) != false)
@@ -206,7 +206,7 @@ namespace LaserSystemLibrary
         {
             GetScans();
              
-            double currentSecond = Math.Floor(sw.Elapsed.TotalSeconds);
+            /*double currentSecond = Math.Floor(sw.Elapsed.TotalSeconds);
             if (timer1.Interval == 1500)
                 timer1.Interval = 1000;
             Console.WriteLine("OMFG A TIMER!");
@@ -217,17 +217,17 @@ namespace LaserSystemLibrary
             Console.WriteLine("Left ticks: {0}", path.LeftTicks.Count);
             for (int i = 0; i < path.LeftTicks.Count; i++)
             {
-                Console.WriteLine("{0} vs {1}", Math.Floor(path.LeftTicks[i].tick/1000), currentSecond);
                 if (Math.Floor(path.LeftTicks[i].tick / 1000) <= currentSecond)
                 {
                     ScanGroup sgL = GetScanGroup(LeftScanRepo, path.LeftTicks[i], true);
+                    if (sgL.LMSScan.buffer != null) {
                     sgL.ScanLoc = path.LeftTicks[i];
                     leftScans.Add(sgL);
+                    }
                     path.LeftTicks.RemoveAt(i);
                     Console.WriteLine("left tick removed");
                     i--;
                 }
-            
             }
             Console.WriteLine("right ticks: {0}", path.RightTicks.Count);
             for (int i = 0; i < path.RightTicks.Count; i++)
@@ -235,6 +235,7 @@ namespace LaserSystemLibrary
                 Console.WriteLine("TICK TIME : {0} ", path.RightTicks[i].tick);
                 if (Math.Floor(path.RightTicks[i].tick / 1000) <= currentSecond)
                 {
+                    Console.WriteLine("rightscanrepo lmsscans count: " + RightScanRepo.LMSScans.Count.ToString());
                     ScanGroup sgR = GetScanGroup(RightScanRepo, path.RightTicks[i], false);
                     sgR.ScanLoc = path.RightTicks[i];
                     rightScans.Add(sgR);
@@ -252,6 +253,7 @@ namespace LaserSystemLibrary
             {
                 shapefile.write(sg, "right");
             }
+             * */
         }
 
         private ScanGroup GetScanGroup(ScanRepo ScanRepo,ScanLocation scanLocation, bool left)
@@ -289,7 +291,7 @@ namespace LaserSystemLibrary
         }
         private void WriteToConsole(string str)
         {
-            if (false)
+            if (true)
             {
                 Console.WriteLine(str);
             }
@@ -356,7 +358,7 @@ namespace LaserSystemLibrary
         }
         public void RunLeftLMS()
         {
-            LMS291_3 lms = new LMS291_3(LeftLMSCom, 500000, sw, true);
+            LMS291 lms = new LMS291(LeftLMSCom, 500000, sw, true);
             LmsScan2 scan;
             lms.StartContinuousScan();
             Thread.Sleep(1);
@@ -378,7 +380,7 @@ namespace LaserSystemLibrary
 
         public void RunRightLMS()
         {
-            LMS291_3 lms = new LMS291_3(RightLMSCom, 500000, sw, false);
+            LMS291 lms = new LMS291(RightLMSCom, 500000, sw, false);
             LmsScan2 scan;
             lms.StartContinuousScan();
             Thread.Sleep(1);

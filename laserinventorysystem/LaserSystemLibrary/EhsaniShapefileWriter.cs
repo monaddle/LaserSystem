@@ -9,7 +9,7 @@ using DotSpatial.Projections;
 using System.IO;
 namespace LaserSystemLibrary
 {
-    public class ACSShapefileWriter
+    public class EhsaniShapefileWriter
     {
         FeatureSet fs;
         int countSinceSave = 0;
@@ -19,28 +19,13 @@ namespace LaserSystemLibrary
 
         double[] xy = new double[2];
         double[] zproj = new double[1];
-        public ACSShapefileWriter(string path)
+        public EhsaniShapefileWriter(string path)
         {
             fs = new FeatureSet(FeatureType.Point);
-            fs.DataTable.Columns.Add("DENSITY", typeof(double));
-            fs.DataTable.Columns.Add("HEIGHT", typeof(double));
-            fs.DataTable.Columns.Add("SKIRTHT", typeof(double));
-            fs.DataTable.Columns.Add("TREDEDGE", typeof(double));
-            fs.DataTable.Columns.Add("BREDEDGE", typeof(double));
-            fs.DataTable.Columns.Add("TNIR", typeof(double));
-            fs.DataTable.Columns.Add("BNIR", typeof(double));
-            fs.DataTable.Columns.Add("TRED", typeof(double));
-            fs.DataTable.Columns.Add("BRED", typeof(double));
-            fs.DataTable.Columns.Add("TNDRE", typeof(double));
-            fs.DataTable.Columns.Add("BNDRE", typeof(double));
-            fs.DataTable.Columns.Add("TNDVI", typeof(double));
-            fs.DataTable.Columns.Add("BNDVI", typeof(double));
-            fs.DataTable.Columns.Add("TIME", typeof(string));
             fs.DataTable.Columns.Add("LATITUDE", typeof(string));
             fs.DataTable.Columns.Add("LONGITUDE", typeof(string));
             fs.DataTable.Columns.Add("ALTITUDE", typeof(double));
             fs.DataTable.Columns.Add("Left", typeof(string));
-            fs.DataTable.Columns.Add("DISTANCE", typeof(double));
             fs.DataTable.Columns.Add("HARBLKID", typeof(string));
             fs.Projection = KnownCoordinateSystems.Geographic.World.WGS1984;
             fs.Projection = utm17;
@@ -48,41 +33,21 @@ namespace LaserSystemLibrary
         }
 
 
-        public void write(ScanGroup scans, string left)
+        public void write(ScanLocation ScanLoc, string left)
         {
-
-            double ClosestPoint = 0;
-            xy[0] = scans.ScanLoc.point.x;
-            xy[1] = scans.ScanLoc.point.y;
+            
+            xy[0] = ScanLoc.point.x;
+            xy[1] = ScanLoc.point.y;
             Point point = new Point(xy[0], xy[1]);
-            zproj[0] = scans.ScanLoc.point.z;
+            zproj[0] = ScanLoc.point.z;
             Reproject.ReprojectPoints(xy, zproj, utm17, wgs84, 0, 1);
             IFeature feature = fs.AddFeature(point);
             
             feature.DataRow.BeginEdit();
-            feature.DataRow["DENSITY"] = scans.ScanResults.Density;
-            feature.DataRow["HEIGHT"] = scans.ScanResults.TreeHeight;
-            feature.DataRow["SKIRTHT"] = scans.ScanResults.SkirtHeight;
-
-            feature.DataRow["TREDEDGE"] = scans.TopReading.RedEdge;
-            feature.DataRow["TNIR"] = scans.TopReading.NIR;
-            feature.DataRow["TRED"] = scans.TopReading.Red;
-            feature.DataRow["TNDRE"] = scans.TopReading.NDRE;
-            feature.DataRow["TNDVI"] = scans.TopReading.NDVI;
-
-            feature.DataRow["BREDEDGE"] = scans.BottomReading.RedEdge;
-            feature.DataRow["BNIR"] = scans.BottomReading.NIR;
-            feature.DataRow["BRED"] = scans.BottomReading.Red;
-            feature.DataRow["BNDRE"] = scans.BottomReading.NDRE;
-            feature.DataRow["BNDVI"] = scans.BottomReading.NDVI;
-
-            feature.DataRow["TIME"] = scans.LMSScan.timestamp.ToString();
             feature.DataRow["LATITUDE"] = xy[1];
             feature.DataRow["LONGITUDE"] = xy[0];
             feature.DataRow["left"] = left;
-            feature.DataRow["ALTITUDE"] = scans.ScanLoc.point.z;
-            feature.DataRow["DISTANCE"] = ClosestPoint;
-            feature.DataRow["HARBLKID"] = scans.ScanLoc.HarBlkID;
+            feature.DataRow["ALTITUDE"] = ScanLoc.point.z;
             feature.DataRow.EndEdit();
         }
 

@@ -21,8 +21,6 @@ namespace LaserSystem
     {
         ScanningOptions settings = new ScanningOptions();
 
-        static LMS291_2 rlaser;
-        static LMS291_2 llaser;
         static List<LmsScan2> leftscans = new List<LmsScan2>();
         static List<LmsScan2> rightscans = new List<LmsScan2>();
 
@@ -41,38 +39,39 @@ namespace LaserSystem
         ConcurrentQueue<LmsScan2> RightLMSReadings = new ConcurrentQueue<LmsScan2>();
         public frm_main()
         {
+            //MessageBox.Show(String.Join(", ", System.IO.Ports.SerialPort.GetPortNames()));
             InitializeComponent();
             stopwatch.Start();
             settings.LoadSettings();
             txtBox_height.Text = Convert.ToString(settings.laserHeight);
             txtBox_rowDistance.Text = Convert.ToString(settings.rowDistance);
             txtBox_OutputFilePath.Text = settings.OutputFilePath;
-            txtBox_MinHeight.Text = Convert.ToString(settings.minHeight);
 
             cb_samplingDistance.SelectedIndex = settings.samplingDistanceSelectedIndex;
             try
             {
-                ScannerRepo.LeftLMS = new LMS291_3(settings.comSettings.lComName, settings.comSettings.lBaudRate, stopwatch, true);
+                ScannerRepo.LeftLMS = new LMS291(settings.comSettings.lComName, settings.comSettings.lBaudRate, stopwatch, true);
                 Thread th6 = new Thread(RunLeftLMS);
                 th6.Name = "LeftLMS";
-                th6.Priority = ThreadPriority.AboveNormal;
+                th6.Priority = ThreadPriority.Highest;
                 th6.Start();
             }
             catch { }
             try
             {
-                ScannerRepo.RightLMS = new LMS291_3(settings.comSettings.rComName, settings.comSettings.rBaudRate, stopwatch, false);
+                ScannerRepo.RightLMS = new LMS291(settings.comSettings.rComName, settings.comSettings.rBaudRate, stopwatch, false);
                 Thread th7 = new Thread(RunRightLMS);
                 th7.Name = "RightLMS";
-                th7.Priority = ThreadPriority.AboveNormal;
+                th7.Priority = ThreadPriority.Highest;
                 th7.Start();
+                
             }
             catch { }
             try
             {
-                ScannerRepo.GPS = new NmeaReader(settings.comSettings.gpsComName, 38400, stopwatch);
+                ScannerRepo.GPS = new NmeaReader(settings.comSettings.gpsComName, 19200, stopwatch);
                 Thread th3 = new Thread(RunGPS);
-                th3.Priority = ThreadPriority.AboveNormal;
+                th3.Priority = ThreadPriority.Highest;
                 th3.Name = "gps";
                 th3.Start();
             }
@@ -227,7 +226,7 @@ namespace LaserSystem
                 settings.rowDistance = Convert.ToDouble(txtBox_rowDistance.Text);
                 settings.samplingDistance = Convert.ToDouble(cb_samplingDistance.SelectedValue);
                 settings.samplingDistanceSelectedIndex = cb_samplingDistance.SelectedIndex;
-                settings.minHeight = Convert.ToDouble(txtBox_MinHeight.Text);
+                settings.minHeight = 3;
                 settings.SaveSettings();
             }
         }
@@ -375,7 +374,11 @@ namespace LaserSystem
                     }
                     MessageBox.Show("Save failed.");
                 }
+
+
             }
+            ConvertReadingsToText converter = new ConvertReadingsToText(tcc.sensorLogger.filePath, tcc.sensorLogger.FileTag, settings);
+            converter.ConvertAndSave();
         }
         private void btn_StopScanning_Click(object sender, EventArgs e)
         {
@@ -415,8 +418,10 @@ namespace LaserSystem
             settings.saveData = saveDataToolStripMenuItem.Checked;
             settings.useLeftLaser = chkbox_leftLaser.Checked;
             settings.useRightLaser = chkbox_rightLaser.Checked;
-            settings.minHeight = Convert.ToDouble(txtBox_MinHeight.Text);
+            settings.minHeight = 3.0;
             settings.UsePolygonLayer = usePolygonConstraintToolStripMenuItem.Checked;
+            settings.laserOffset = Convert.ToDouble(this.txt_laserOffset);
+
         }
 
         private void DisableInterface()
@@ -426,21 +431,6 @@ namespace LaserSystem
                 control.Enabled = false;
             }
             btn_StopScanning.Enabled = true;
-        }
-
-        private void createGeodatabaseToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            SaveFileDialog saveDialog = new SaveFileDialog();
-            saveDialog.InitialDirectory = @"C:\";
-            if (saveDialog.ShowDialog() == DialogResult.OK)
-            {
-                CreateNewGDB(saveDialog.FileName);
-            }
-        }
-
-        private void CreateNewGDB(string p)
-        {
-            throw new NotImplementedException();
         }
 
 
@@ -459,11 +449,6 @@ namespace LaserSystem
             w.WriteLine("  :");
             w.WriteLine("  :{0}", logMessage);
             w.WriteLine("-------------------------------");
-        }
-
-        private void frm_main_Load(object sender, EventArgs e)
-        {
-
         }
 
         private void RunACS(string portName, ConcurrentQueue<ACS430Reading> queue, ACS430 acs)
@@ -530,10 +515,12 @@ namespace LaserSystem
         }
         public void RunLeftLMS()
         {
-            LMS291_3 lms = ScannerRepo.LeftLMS;
+            LMS291 lms = ScannerRepo.LeftLMS;
             LmsScan2 scan;
+            Console.WriteLine("starting left laser");
             lms.StartContinuousScan();
             Thread.Sleep(1);
+            Console.WriteLine("starting left laser");
             lms.StartContinuousScan();
             Thread.Sleep(1);
             while (true)
@@ -552,10 +539,12 @@ namespace LaserSystem
 
         public void RunRightLMS()
         {
-            LMS291_3 lms = ScannerRepo.RightLMS;
+            LMS291 lms = ScannerRepo.RightLMS;
+            Console.WriteLine("starting right laser");
             LmsScan2 scan;
             lms.StartContinuousScan();
             Thread.Sleep(1);
+            Console.WriteLine("starting right laser");
             lms.StartContinuousScan();
             Thread.Sleep(1);
 

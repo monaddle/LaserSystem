@@ -38,8 +38,9 @@ namespace LaserSystemLibrary
             {
                 while (BytesRead < 69)
                     BytesRead += port.Read(chars, BytesRead, 69);
-                
+                //Console.WriteLine(BytesRead);
                 String str = new String(chars);
+                //Console.WriteLine(str);
                 int index = str.IndexOf("$GPGGA");
                 if (index > 0)
                 {
@@ -57,7 +58,10 @@ namespace LaserSystemLibrary
 
                 try
                 {
+                    //Console.WriteLine(index);
+                    //Console.WriteLine("reading!");
                     String gpgga = str.Substring(index, 67);
+                    //Console.WriteLine(gpgga);
                     sentence.buffer = gpgga;
                     sentence.milliseconds = stopwatch.Elapsed.TotalMilliseconds;
                     string[] split = gpgga.Split(',');

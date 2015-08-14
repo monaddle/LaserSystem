@@ -9,7 +9,7 @@ using LaserSystemLibrary;
 
 namespace LaserSystemLibrary
 {
-    class SensorLogger
+    public class SensorLogger
     {
         Stream TopLeftACSStream;
         Stream BottomLeftACSStream;
@@ -19,11 +19,12 @@ namespace LaserSystemLibrary
         Stream RightLMSStream;
         Stream GPSStream;
         BinaryFormatter serializer = new BinaryFormatter();
-        
-        string FileTag;
+        public string filePath;
+        public string FileTag;
         public bool DummyLogging = false;
         public SensorLogger(string filePath, string fileTag)
         {
+            this.filePath = filePath;
             this.FileTag = fileTag;
             TopLeftACSStream = File.Create(filePath + fileTag + "TopLeftACS.bin");
             

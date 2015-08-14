@@ -62,28 +62,7 @@ namespace LaserSystemLibrary
             numberOfSeconds = 0;
         }
         int bytesRead;
-        //public LmsScan2 read2()
-        //{
-        //    bytesRead += port.Read(Buffer, bytesRead, message.Length - received);
-        //    if (bytesRead > 360)
-        //    {
-        //        for (int i = 0; i < bytesRead - 20; i++)
-        //        {
-        //            byte STX = Buffer[i];
-        //            byte ADDR = Buffer[i + 1];
-        //            byte CMD = Buffer[i + 4];
-        //            if (STX == 0x02 & ((ADDR & 0x80) == 0x80))
-        //            {
-                        
-        //            }
-        //        }
-        //    }
-        //    while ((received < message.Length) && ((DateTime.Now - start).Milliseconds < 500))
-        //    {
-
-        //        //append the data to the buffer
-        //    }
-        //}
+        
         public LmsScan2 read()
         {
 
