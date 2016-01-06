@@ -346,6 +346,7 @@ namespace LaserSystem
             }
             catch (Exception err)
             {
+                MessageBox.Show(err.Message);
                 timer.Start();
                 Console.Beep(5000, 1000);
                 MessageBox.Show(err.Message);
@@ -358,24 +359,6 @@ namespace LaserSystem
                     
 
                 }
-                MessageBox.Show("Trying to save...");
-                try
-                {
-                    MessageBox.Show("Save worked!");
-
-                }
-                catch (Exception err1)
-                {
-                    using (StreamWriter w = File.AppendText(Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments) + "\\" + "log.txt"))
-                    {
-                        Log(err1.Message, w);
-                        Log(err1.StackTrace, w);
-                        Log(err1.Source, w);
-                    }
-                    MessageBox.Show("Save failed.");
-                }
-
-
             }
             ConvertReadingsToText converter = new ConvertReadingsToText(tcc.sensorLogger.filePath, tcc.sensorLogger.FileTag, settings);
             converter.ConvertAndSave();
@@ -420,7 +403,7 @@ namespace LaserSystem
             settings.useRightLaser = chkbox_rightLaser.Checked;
             settings.minHeight = 3.0;
             settings.UsePolygonLayer = usePolygonConstraintToolStripMenuItem.Checked;
-            settings.laserOffset = Convert.ToDouble(this.txt_laserOffset);
+            settings.laserOffset = Convert.ToDouble(this.txt_laserOffset.Text);
 
         }
 
@@ -592,6 +575,9 @@ namespace LaserSystem
             usePolygonConstraintToolStripMenuItem.Checked = !usePolygonConstraintToolStripMenuItem.Checked;
         }
 
+        private void txt_laserOffset_TextChanged(object sender, EventArgs e)
+        {
 
+        }
     }
 }

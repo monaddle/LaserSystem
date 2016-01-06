@@ -88,18 +88,25 @@ namespace LaserSystemLibrary
                 rightLMSScans.Remove(scan);
             }
 
-            LeftLMSStream = File.Create(filePath + fileTag + "LeftLMS.txt");
             EhsaniShapefileWriter sf = new EhsaniShapefileWriter(filePath + fileTag + "ehsanishapefile.shp");
             foreach(ScanLocation scanloc in rightPositions.Where(x=> x != null))
             {
                 sf.write(scanloc, "Right");
             }
+            foreach (ScanLocation scanloc in leftPositions.Where(x => x != null))
+            {
+                sf.write(scanloc, "Left");
+            }
             sf.Close();
             List<string> rightPositionStrings = rightPositions.Where(x=> x != null).Select(scanloc => scanloc.point.x.ToString() + "," + scanloc.point.y).ToList();
             List<string> rightScanStrings = rightLMSScans.Select(scan => String.Join(",", scan.scanResults.distances.Select(distance => distance.ToString()))).ToList();
-
             List<string> strings = rightPositionStrings.Zip(rightScanStrings, (position, scan) => position + "|" + scan).ToList();
             System.IO.File.WriteAllLines(filePath + fileTag + "RightLMS.txt", strings);
+
+            List<string> leftPositionStrings = leftPositions.Where(x => x != null).Select(scanloc => scanloc.point.x.ToString() + "," + scanloc.point.y).ToList();
+            List<string> leftScanStrings = leftLMSScans.Select(scan => String.Join(",", scan.scanResults.distances.Select(distance => distance.ToString()))).ToList();
+            List<string> leftstrings = leftPositionStrings.Zip(leftScanStrings, (position, scan) => position + "|" + scan).ToList();
+            System.IO.File.WriteAllLines(filePath + fileTag + "LeftLMS.txt", leftstrings);
 
             List<string> settings = new List<string>();
             settings.Add("Row distance: " + options.rowDistance.ToString());

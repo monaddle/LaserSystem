@@ -121,7 +121,7 @@ namespace LaserSystemLibrary
         {
             timer1.Stop();
             Thread.Sleep(100);
-            shapefile.Close();
+            //shapefile.Close();
             sensorLogger.Close();
         }
         void GetScans()
